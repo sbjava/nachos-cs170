@@ -1,0 +1,11 @@
+This is our awesome svn repo
+
+To checkout:
+svn co https://nachos-cs170.googlecode.com/svn/trunk/nachos-3.4/ nachos-3.4 --username YOUR_GOOGLE_USERNAME
+
+To commit:
+svn ci -m "your message goes here"
+
+To update your local copy to the latest rev on the repo:
+svn up
+
