@@ -34,6 +34,7 @@ class AddrSpace {
     // translates a virtual address into 
     // a physical address                                       
     bool Translate(int vAddr, int* physAddr);	
+    int ReadFile(int virtAddr, OpenFile* file, int size, int fileAddr);
 
   private:
     TranslationEntry *pageTable;	// Assume linear page table translation
