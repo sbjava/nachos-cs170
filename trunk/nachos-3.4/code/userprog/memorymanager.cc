@@ -34,9 +34,9 @@ MemoryManager::getPage ()
     // if all pages are in use then return an invalid index
     if(freePage == -1)
 	return -1;
-    numPages++;
+    numUsedPages++;
 
-    return freeBit;
+    return freePage;
 }
 
 //----------------------------------------------------------------------
@@ -47,12 +47,12 @@ void
 MemoryManager::clearPage (int i)
 {
     pages->Clear (i);
-    numPages--;
+    numUsedPages--;
 }
 
 int
 MemoryManager::getAvailable ()
 {
-    return NUM_OF_PHYSICAL_PAGES - numPages;
+    return NUM_OF_PHYSICAL_PAGES - numUsedPages;
 }
         
