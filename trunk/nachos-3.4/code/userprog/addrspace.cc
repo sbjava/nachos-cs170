@@ -188,6 +188,11 @@ void AddrSpace::RestoreState()
 // AddrSpace::Translate()
 //      takes a virtual address and tranlates it into a physical
 //      address
+//
+//      return true if virtual address was valid, false otherwise
+//
+//      "vAddr" : virtual address to be translated
+//      "physAddr" : the physical address to be stored
 //---------------------------------------------------------------------
 bool
 AddrSpace::Translate(int vAddr, int *physAddr)
@@ -206,4 +211,61 @@ AddrSpace::Translate(int vAddr, int *physAddr)
     *physAddr = pageTable[vpn].physicalPage * PageSize + offset;  // should it be ".physicalPage" ???
     return true;
     
+}
+
+//---------------------------------------------------------------------
+// AddrSpace::ReadFile()
+//      loads the code and data segments into the translated memory
+//      instead at positon 0 like the constructor already does
+//
+//      return the number of bytes actually read
+//
+//      "virtAddr" : beginning virtual address of the bytes to be read
+//      "file" : file where bytes are from
+//      "size" : amount of bytes to be read
+//      "fileAddr" : the file address
+//---------------------------------------------------------------------
+int
+AddrSpace::ReadFile(int virtAddr, OpenFile* file, int size, int fileAddr)
+{
+    char diskBuffer[size]; 	// stores the bytes read
+    int availBytes;		// num bytes available to read
+    int physAddr;
+    
+    // get the number of bytes that are actually there
+    int actualSize = file->ReadAt(diskBuffer, size, fileAddr); // @@@ what if actual size > size ???
+    int bytesLeft = actualSize;
+
+    int bytesCopied = 0;
+
+    // read the bytes in the file
+    while(bytesLeft > 0)
+    { 
+        bool valid = Translate(virtAddr, &physAddr);
+	if(valid < 0)
+        {
+            DEBUG('a',"virtual address could not be translated\n");
+	    return -1;   // could not translate virtAddr... there is an issue
+        }
+        
+        availBytes = PageSize - (physAddr % PageSize);
+        
+        // Be sure not to under or over flow the buffer during copy
+        // Be sure no to write too much of the file into memory
+        int bytesToRead = 0;
+        if(bytesLeft < availBytes)
+	    bytesToRead = bytesLeft;
+        else
+	    bytesToRead = availBytes;
+	bcopy(diskBuffer+bytesCopied, &machine->mainMemory[physAddr], bytesToRead);
+	
+	// decrement the number of bytes left to read
+	bytesLeft -= bytesToRead;
+        // increment the number of bytes already read
+	bytesCopied += bytesToRead;
+	// increment to the next virtual address to write to
+	virtAddr += bytesToRead;
+    } 
+    
+    return actualSize;                
 }
