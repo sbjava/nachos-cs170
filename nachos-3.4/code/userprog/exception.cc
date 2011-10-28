@@ -72,17 +72,47 @@ ExceptionHandler(ExceptionType which)
                break;
             }
 
-	}
+		}	
     } else {
 	printf("Unexpected user mode exception %d %d\n", which, type);
 	ASSERT(FALSE);
     }
 }
 
-int 
-myFork(int func)
+// Dummy function used by myFork
+void myForkHelper(int funcAddr) {
+	int* stateData = (int*)funcAddr;
+	for(int i=0; i<NumTotalRegs; i++)
+		machine->WriteRegister(i, stateData[i]);
+	delete[] stateData;
+	
+	currentThread->space->RestoreState();
+	machine->Run();
+	ASSERT(FALSE);
+}
+
+// Fork system call
+void myFork(int funcAddr)
 {
-    // @@@ dummy return val
-    return 0;
+	// Check funcAddr
+	if(funcAddr < 0) {
+		printf("The address of this function is invalid.");
+		return;
+	}
+	AddrSpace *addrSpace = currentThread->space;
+	Thread *thread = new Thread("forked thread");	
+	thread->space = addrSpace;
+	
+	// save PC, return, and other machine registers before fork and yield
+	addrSpace->SaveState();
+	int* currStateData = new int[NumTotalRegs];
+	for(int i=0; i<NumTotalRegs; i++)
+		currStateData[i] = machine->ReadRegister(i);
+		
+	currStateData[PCReg] = funcAddr;
+	currStateData[NextPCReg] = funcAddr+4;		
+		
+	thread->Fork(myForkHelper, (int)currStateDate);		
+	currentThread->Yield();	
 }
 
