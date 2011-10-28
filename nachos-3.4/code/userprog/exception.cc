@@ -113,7 +113,7 @@ void myFork(int funcAddr)
 	currStateData[PCReg] = funcAddr;
 	currStateData[NextPCReg] = funcAddr+4;		
 		
-	thread->Fork(myForkHelper, (int)currStateDate);		
+	thread->Fork(myForkHelper, (int)currStateData);		
 	currentThread->Yield();	
 }
 
