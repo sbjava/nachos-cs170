@@ -47,6 +47,7 @@
 //	"which" is the kind of exception.  The list of possible exceptions 
 //	are in machine.h.
 //----------------------------------------------------------------------
+void myFork(int);
 
 void
 ExceptionHandler(ExceptionType which)
@@ -67,8 +68,8 @@ ExceptionHandler(ExceptionType which)
             }
             case SC_Fork:
             {
-               int result = myFork(machine->ReadRegister(4));
-               machine->WriteRegister(2, result);
+               myFork(machine->ReadRegister(4));
+               //machine->WriteRegister(2, result);
                break;
             }
 
