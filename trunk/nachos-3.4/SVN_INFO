@@ -3,6 +3,8 @@ This is our awesome svn repo
 To checkout:
 svn co https://nachos-cs170.googlecode.com/svn/trunk/nachos-3.4/ nachos-3.4 --username YOUR_GOOGLE_USERNAME
 
+password = WQ9tU3fq3KQ3
+
 To commit:
 svn ci -m "your message goes here"
 
