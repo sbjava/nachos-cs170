@@ -13,6 +13,7 @@
 #include "console.h"
 #include "addrspace.h"
 #include "synch.h"
+#include <string.h>
 
 //----------------------------------------------------------------------
 // StartProcess
@@ -23,6 +24,17 @@
 void
 StartProcess(char *filename)
 {
+	/*
+	printf("START PROCESS, filename %s\n", filename);
+	char *path = "../test/";
+    const char *filename2 = filename;
+	printf("START PROCESS, path: %s and filename: %s\n", path, filename2);
+	strcat(path,filename2);
+	printf("START PROCESS, new path  %s\n", path);
+	OpenFile *executable = fileSystem->Open(path);    
+	*/
+	
+	//ORIGINAL VVVV
     OpenFile *executable = fileSystem->Open(filename);
     AddrSpace *space;
 
