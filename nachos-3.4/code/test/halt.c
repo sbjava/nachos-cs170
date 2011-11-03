@@ -15,6 +15,9 @@
 int
 main()
 {
+	//printf("Before halt");    
     Halt();
     /* not reached */
+    //printf("Should not print");
+
 }
