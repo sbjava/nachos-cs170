@@ -18,6 +18,7 @@
 
 #define UserStackSize		1024 	// increase this as necessary!
 
+class PCB;
 class AddrSpace {
   public:
     AddrSpace(OpenFile *executable);	// Create an address space,
@@ -36,6 +37,8 @@ class AddrSpace {
     bool Translate(int vAddr, int* physAddr);	
     int ReadFile(int virtAddr, OpenFile* file, int size, int fileAddr);
 
+    PCB *pcb;				// Process Control Block for info 
+					// about process
   private:
     TranslationEntry *pageTable;	// Assume linear page table translation
 					// for now!
