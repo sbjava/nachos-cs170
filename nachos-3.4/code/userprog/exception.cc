@@ -48,13 +48,16 @@
 //	are in machine.h.
 //----------------------------------------------------------------------
 void myFork(int);
+void myYield();
+int myExec(char *);
 
 void
 ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
-
-    //if ((which == SyscallException) && (type == SC_Halt)) {
+	char fileName[128];
+	int pid;
+	
     if(which == SyscallException)
     {
         switch(type)
@@ -74,6 +77,21 @@ ExceptionHandler(ExceptionType which)
 			case SC_Yield:
 			{
 				myYield();
+				break;
+			}
+			case SC_Exec:
+			{
+				int position = 0;
+			    int arg = machine->ReadRegister(4);
+			    int value;
+			    while (value != NULL) {
+			    	machine->ReadMem(arg, 1, &value);
+			        fileName[position] = (char) value;
+			        position++;
+			        arg++;
+			    }
+				pid = myExec(fileName);
+				machine->WriteRegister(2, pid);
 				break;
 			}
 		}	
@@ -122,6 +140,25 @@ void myFork(int funcAddr){
 // Yield system call
 void myYield(){
 	currentThread->Yield();
+}
+
+// Exec system call
+int myExec(char *file){
+	int spaceID;
+	OpenFile *executable = fileSystem->Open(filename);
+	if(executable == NULL){
+		printf("Unable to open file %s\n", filename);
+		return -1;
+	}
+	
+	AddrSpace *space;
+	PCB* pcb = new PCB();
+	Thread *t = new Thread("Forked process");
+	space = new AddrSpace(executable);
+	//WORK IN PROGRESS
+	
+	
+	
 }
 
 
