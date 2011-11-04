@@ -16,13 +16,17 @@ ProcessManager::ProcessManager():processes(MAX_PROCESSES)
     pcbs = new PCB*[MAX_PROCESSES];
 }
 
-int ProcessManager::GetPID()
+void ProcessManager::insertProcess(PCB *pcb, int pid){
+	pcbs[pid] = pcb;
+}
+
+int ProcessManager::getPID()
 {
     // Find()- first clear bit in bitmap
     return processes.Find();
 }
 
-void ProcessManager::ClearPID(int pid)
+void ProcessManager::clearPID(int pid)
 {
     processes.Clear(pid);
 }

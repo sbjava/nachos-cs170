@@ -142,10 +142,19 @@ void myYield(){
 	currentThread->Yield();
 }
 
+// Helper func to create new process in register.
+void newProc(int arg){
+	currentThread->space->InitRegisters(); 
+	currentThread->space->SaveState();
+	currentThread->space->RestoreState(); 
+	machine->Run();	
+}
+
 // Exec system call
 int myExec(char *file){
 	int spaceID;
 	OpenFile *executable = fileSystem->Open(filename);
+	
 	if(executable == NULL){
 		printf("Unable to open file %s\n", filename);
 		return -1;
@@ -155,9 +164,20 @@ int myExec(char *file){
 	PCB* pcb = new PCB();
 	Thread *t = new Thread("Forked process");
 	space = new AddrSpace(executable);
-	//WORK IN PROGRESS
+	pcb->pid = procManager->getPID();
+	spaceID = pcb->pid;
 	
-	
+	ASSERT(pcb->pid!=-1);
+	pcb->parentPid = currentThread->space->pcb->pid;
+	pcb->thread = t;
+	space->pcb = pcb;
+	t->space = space;
+	procManager->insertProcess(pcb, pcb->pid);
+	delete executable;
+		
+	t->Fork(newProc, NULL);
+	currentThread->Yield();
+	return spaceID;
 	
 }
 
