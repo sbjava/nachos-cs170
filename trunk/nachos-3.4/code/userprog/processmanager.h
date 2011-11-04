@@ -10,8 +10,8 @@ class ProcessManager
         ~ProcessManager();	// Destructor
 
  	int getPID();		// return an unused PID
-        void clearPID(int pid); // clear out PID passed in
-        
+    void clearPID(int pid); // clear out PID passed in
+	void insertProcess(PCB *pcb, int pid); //insert PCB into pcsb    
 
     private:
 	BitMap processes; 	// a BitMap for process manager methods
