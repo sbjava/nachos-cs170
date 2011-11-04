@@ -19,4 +19,4 @@ class ProcessManager
 
 }
 
-#endif PROCESS_MANAGER_H
+#endif
