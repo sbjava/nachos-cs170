@@ -160,7 +160,7 @@ Initialize(int argc, char **argv)
 #ifdef CHANGED
 
     memManager = new MemoryManager();
-
+	procManager = new ProcessManager();
 #endif
 #endif
 

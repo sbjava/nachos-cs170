@@ -38,7 +38,7 @@ extern Machine* machine;	// user program memory and registers
 #include "processmanager.h"
 
     extern MemoryManager *memManager;
-    extern ProcessManager *procMananger;
+    extern ProcessManager *procManager;
 
 #endif
 #endif
