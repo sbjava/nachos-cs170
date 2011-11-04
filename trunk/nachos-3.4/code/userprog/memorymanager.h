@@ -20,4 +20,4 @@ class MemoryManager
     int numUsedPages;			// numnber of the used pages
 };
 
-#endif MEMORYMANAGER_H
+#endif

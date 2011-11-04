@@ -1,7 +1,7 @@
 #ifndef PROCESS_MANAGER_H
 #define PROCESS_MANAGER_H
 
-#include "bitmap.h";
+#include "bitmap.h"
 
 class ProcessManager
 {
