@@ -59,12 +59,11 @@ ExceptionHandler(ExceptionType which)
     {
         switch(type)
         {
-	    case SC_Halt:
-            {
-	       DEBUG('a', "Shutdown, initiated by user program.\n");
-   	       
-	       interrupt->Halt();
-               break;
+	    	case SC_Halt:
+           	{
+	       		DEBUG('a', "Shutdown, initiated by user program.\n");
+	       		interrupt->Halt();
+               	break;
             }
             case SC_Fork:
             {
@@ -72,7 +71,11 @@ ExceptionHandler(ExceptionType which)
                //machine->WriteRegister(2, result);
                break;
             }
-
+			case SC_Yield:
+			{
+				myYield();
+				break;
+			}
 		}	
     } else {
 	printf("Unexpected user mode exception %d %d\n", which, type);
@@ -93,8 +96,7 @@ void myForkHelper(int funcAddr) {
 }
 
 // Fork system call
-void myFork(int funcAddr)
-{
+void myFork(int funcAddr){
 	// Check funcAddr
 	if(funcAddr < 0) {
 		printf("The address of this function is invalid.");
@@ -116,4 +118,10 @@ void myFork(int funcAddr)
 	thread->Fork(myForkHelper, (int)currStateData);		
 	currentThread->Yield();	
 }
+
+// Yield system call
+void myYield(){
+	currentThread->Yield();
+}
+
 
