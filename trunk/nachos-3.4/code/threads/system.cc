@@ -33,6 +33,7 @@ Machine *machine;	// user program memory and registers
 #ifdef CHANGED
 
 MemoryManager *memManager;
+ProcessManager *procManager;
 
 #endif
 #endif
@@ -192,8 +193,8 @@ Cleanup()
     delete machine;
 
 #ifdef CHANGED
-
-    delete memManager;
+     delete memManager;
+     delete procManager;
 
 #endif
 #endif
