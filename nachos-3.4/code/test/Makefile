@@ -67,6 +67,12 @@ fork: fork.o start.o
 	$(LD) $(LDFLAGS) start.o fork.o -o fork.coff
 	../bin/coff2noff fork.coff fork
 
+exec.o: exec.c
+	$(CC) $(CFLAGS) -c exec.c
+exec: exec.o start.o
+	$(LD) $(LDFLAGS) start.o exec.o -o exec.coff
+	../bin/coff2noff exec.coff exec
+
 matmult.o: matmult.c
 	$(CC) $(CFLAGS) -c matmult.c
 matmult: matmult.o start.o

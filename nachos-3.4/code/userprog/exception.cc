@@ -152,29 +152,47 @@ void newProc(int arg){
 
 // Exec system call
 int myExec(char *file){
+	
 	int spaceID;
-	OpenFile *executable = fileSystem->Open(filename);
+	OpenFile *executable = fileSystem->Open(file);
 	
 	if(executable == NULL){
-		printf("Unable to open file %s\n", filename);
+		printf("Unable to open file %s\n", file);
 		return -1;
 	}
-	
+	printf("Exec Test 1 \n");
 	AddrSpace *space;
 	PCB* pcb = new PCB();
 	Thread *t = new Thread("Forked process");
 	space = new AddrSpace(executable);
+	printf("Exec Test 2 \n");
+	
 	pcb->pid = procManager->getPID();
 	spaceID = pcb->pid;
 	
 	ASSERT(pcb->pid!=-1);
+	printf("Exec Test 3jdasd \n");
+	printf("currentThread: %p", currentThread);
+	printf("currentThread->space: %p", currentThread->space);
+	printf("currentThread->space->pcb: %p", currentThread->space->pcb);
+	printf("currentThread->space->pcb->pid: %i", currentThread->space->pcb->pid);
+
 	pcb->parentPid = currentThread->space->pcb->pid;
+	printf("Exec Test 3a\n");
+	
 	pcb->thread = t;
-	space->pcb = pcb;
+	printf("Exec Test 3b \n");
+	
+	//space->pcb = pcb;
+	printf("Exec Test 3c \n");
+	
 	t->space = space;
+	printf("Exec Test 3d \n");
+	
 	procManager->insertProcess(pcb, pcb->pid);
+	printf("Exec Test 4 \n");
 	delete executable;
-		
+	printf("Exec Test 5 \n");
 	t->Fork(newProc, NULL);
 	currentThread->Yield();
 	return spaceID;

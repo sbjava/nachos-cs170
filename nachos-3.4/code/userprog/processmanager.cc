@@ -3,6 +3,10 @@
 //	ProcessManager class similiar memory manager function, return an unused process
 //	id, clear a process id respectively by using a bitmap, store PCBs in an array of PCB*.
 
+//// Might not need to include here
+#include "system.h"
+/////
+
 
 #include "processmanager.h"
 
@@ -29,4 +33,9 @@ int ProcessManager::getPID()
 void ProcessManager::clearPID(int pid)
 {
     processes.Clear(pid);
+}
+
+ProcessManager::~ProcessManager()
+{
+	delete pcbs;
 }

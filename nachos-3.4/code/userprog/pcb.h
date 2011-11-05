@@ -9,6 +9,8 @@
 #ifndef PCB_H_
 #define PCB_H_
 
+class Thread;
+
 class PCB {
 public:
 	int pid;
@@ -16,6 +18,6 @@ public:
 	Thread *thread;
 	PCB();
 	~PCB();
-}
+};
 
 #endif

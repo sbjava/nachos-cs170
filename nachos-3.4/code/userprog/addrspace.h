@@ -18,7 +18,7 @@
 
 #define UserStackSize		1024 	// increase this as necessary!
 
-class PCB;
+#include "pcb.h"
 class AddrSpace {
   public:
     AddrSpace(OpenFile *executable);	// Create an address space,
