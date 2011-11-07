@@ -97,16 +97,166 @@ Semaphore::V()
     (void) interrupt->SetLevel(oldLevel);
 }
 
-// Dummy functions -- so we can compile our later assignments 
-// Note -- without a correct implementation of Condition::Wait(), 
-// the test case in the network assignment won't work!
-Lock::Lock(char* debugName) {}
-Lock::~Lock() {}
-void Lock::Acquire() {}
-void Lock::Release() {}
+#ifdef CHANGED
+	/**
+	* Initialize a lock.
+	*/
+	Lock::Lock(char* debugName) 
+	{
+		name = debugName;
+		//value = 1;
+		//queue = new List;
+		heldThread = NULL;
+	}
+	
+	/**
+	* De-allocate the lock, when no longer needed
+	*/
+	Lock::~Lock() 
+	{
+		//delete queue;		
+	}
+	
+	/**
+	* Acquire the lock for current thread.. similar to Semaphore->P()
+	*/
+	void Lock::Acquire() 
+	{
+		//check if someone else has lock
+		while (heldThread!=NULL && !isHeldByCurrentThread())
+		{	
+			//printf("\tAcquire? %s\n", name);
+			currentThread->Yield();
+		}	
+		
+		IntStatus oldLevel = interrupt->SetLevel(IntOff); 		
+		/*while (value == 0) 
+		{ 											
+			queue->Append((void *)currentThread);
+			currentThread->Sleep();
+		} */
+		
+		//value--; 				
+		heldThread = currentThread;
 
-Condition::Condition(char* debugName) { }
-Condition::~Condition() { }
-void Condition::Wait(Lock* conditionLock) { ASSERT(FALSE); }
-void Condition::Signal(Lock* conditionLock) { }
-void Condition::Broadcast(Lock* conditionLock) { }
+		(void) interrupt->SetLevel(oldLevel);			
+	}
+	
+	/**
+	* Release the lock.. similar to Semaphore->V()
+	*/
+	void Lock::Release()
+	{
+		if(!isHeldByCurrentThread())
+			return;
+			
+		Thread *thread;
+	    IntStatus oldLevel = interrupt->SetLevel(IntOff);
+
+	    //thread = (Thread *)queue->Remove();
+	    //if (thread != NULL)	   // make thread ready
+			//scheduler->ReadyToRun(thread);
+	    //value++;
+		heldThread=NULL;
+	    (void) interrupt->SetLevel(oldLevel);
+		
+	}
+	
+	/**
+	* returns if lock is held by current thread 
+	*/ 
+	bool Lock::isHeldByCurrentThread()
+	{
+		if(heldThread!= NULL && currentThread == heldThread)
+			return true;
+		else
+			return false;
+	}
+
+	/**
+	* Initialize the Condition
+	*/
+	Condition::Condition(char* debugName) 
+	{
+		name = debugName;
+		queue = new List;
+	}
+	
+	/**
+	* Condition deconstructor
+	*/
+	Condition::~Condition()
+	{ 
+		
+	}
+
+	/**
+	* Check to see if lock is held. If it is, queue the thread and put it to sleep until
+	* it is woken up.
+	*/
+	void Condition::Wait(Lock* conditionLock) 
+	{ 
+		//If lock is not held by current thread, do nothing.
+		if(!conditionLock->isHeldByCurrentThread())
+			return;
+	
+		IntStatus oldLevel = interrupt->SetLevel(IntOff);
+		
+		queue->Append((void *) currentThread);
+		conditionLock->Release();
+		currentThread->Sleep();
+		
+		(void) interrupt->SetLevel(oldLevel);
+		conditionLock->Acquire();		
+	}
+	
+	void Condition::Signal(Lock* conditionLock) 
+	{
+		if(!conditionLock->isHeldByCurrentThread() || queue->IsEmpty())
+		{
+			return;
+		}
+		
+		Thread *t;
+		IntStatus oldLevel= interrupt->SetLevel(IntOff);
+		
+		t = (Thread *)queue->Remove();
+		if(t != NULL)
+			scheduler->ReadyToRun(t);
+		
+		(void) interrupt->SetLevel(oldLevel);		
+	}
+	
+	void Condition::Broadcast(Lock* conditionLock)
+	{ 
+		if(!conditionLock->isHeldByCurrentThread())
+			return;
+			
+		Thread *t;
+		IntStatus oldLevel = interrupt->SetLevel(IntOff);
+		
+		while(!queue->IsEmpty())
+		{
+			t = (Thread *)queue->Remove();
+			if(t != NULL)
+				scheduler->ReadyToRun(t);
+		}
+		
+		(void) interrupt->SetLevel(oldLevel);
+	}
+	
+#else	
+	// Dummy functions -- so we can compile our later assignments 
+	// Note -- without a correct implementation of Condition::Wait(), 
+	// the test case in the network assignment won't work!
+	Lock::Lock(char* debugName) {}
+	Lock::~Lock() {}
+	void Lock::Acquire() {}
+	void Lock::Release() {}
+	
+	Condition::Condition(char* debugName) { }
+	Condition::~Condition() { }
+	void Condition::Wait(Lock* conditionLock) { ASSERT(FALSE); }
+	void Condition::Signal(Lock* conditionLock) { }
+	void Condition::Broadcast(Lock* conditionLock) { }
+#endif
