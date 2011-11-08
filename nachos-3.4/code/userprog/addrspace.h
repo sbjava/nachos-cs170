@@ -26,6 +26,8 @@ class AddrSpace {
 					// stored in the file "executable"
     ~AddrSpace();			// De-allocate an address space
 
+	AddrSpace();
+
     void InitRegisters();		// Initialize user-level CPU registers,
 					// before jumping to user code
 
@@ -36,6 +38,7 @@ class AddrSpace {
     // a physical address                                       
     bool Translate(int vAddr, int* physAddr);	
     int ReadFile(int virtAddr, OpenFile* file, int size, int fileAddr);
+	AddrSpace* Duplicate();
 
     PCB *pcb;				// Process Control Block for info 
 					// about process
@@ -44,6 +47,7 @@ class AddrSpace {
 					// for now!
     unsigned int numPages;		// Number of pages in the virtual 
 					// address space
+	int progRegisters[NumTotalRegs];  
 };
 
 #endif // ADDRSPACE_H
