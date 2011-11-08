@@ -78,3 +78,16 @@ int ProcessManager::GetStatus(int pid)
     return pcbStatus[pid];
 }
 
+void ProcessManager::Broadcast(int pid)
+{
+    Lock * lock = locks[pid];
+    Condition* condition = conditions[pid];
+    pcbStatus[pid] = pcbs[pid]->status;
+    if(condition != NULL)
+    {
+        lock->Acquire();
+        condition->Broadcast(lock);
+        lock->Release();
+    }
+}
+

@@ -17,6 +17,7 @@ public:
 	void insertProcess(PCB *pcb, int pid); //insert PCB into pcsb    
  	void join(int pid);	// keeps track of who is waiting on a condition variable for each PCB
 	int getStatus(int pid); // Get pid's process status
+	void Broadcast(int pid);// Broadcast the "pid" process in Exit
 
 private:
 	BitMap processes; 	// a BitMap for process manager methods
