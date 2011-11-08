@@ -46,7 +46,7 @@ void ProcessManager::clearPID(int pid)
 }
 
 void
-join(int pid)
+ProcessManager::join(int pid)
 {
     Lock *l = locks[pid];
     if(l == NULL)
@@ -65,15 +65,15 @@ join(int pid)
     c->Wait(l);
     this->joinProcessNum[pid]--;
     if(this->joinProcessNum[pid]==0)
-	bitMap.Clear(pid);
+	processes.Clear(pid);
     l->Release();
 
 }
 
 
-int ProcessManager::GetStatus(int pid)
+int ProcessManager::getStatus(int pid)
 {
-    if(bitMap.Test(pid) == 0)
+    if(processes.Test(pid) == 0)
     	return -1;
     return pcbStatus[pid];
 }
