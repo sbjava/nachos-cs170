@@ -49,7 +49,15 @@
 //----------------------------------------------------------------------
 void myFork(int);
 void myYield();
-int myExec(char *);
+SpaceId myExec(char *);
+
+void incrRegs(){
+	int pc = machine->ReadRegister(PCReg);
+	machine->WriteRegister(PrevPCReg, pc);
+	pc = machine->ReadRegister(NextPCReg);
+	machine->WriteRegister(PCReg, pc);
+	machine->WriteRegister(NextPCReg, pc + 4);
+}
 
 void
 ExceptionHandler(ExceptionType which)
@@ -81,7 +89,7 @@ ExceptionHandler(ExceptionType which)
 			}
 			case SC_Exec:
 			{
-				printf("in myexec\n");
+				//printf("in myexec\n");
 				int position = 0;
 			    int arg = machine->ReadRegister(4);
 			    int value;
@@ -91,12 +99,14 @@ ExceptionHandler(ExceptionType which)
 			        position++;
 			        arg++;
 			    }
+				
 				pid = myExec(fileName);
-				printf("pid returned from myExec: %d\n", pid);
+				//printf("pid returned from myExec: %d\n", pid);
 				machine->WriteRegister(2, pid);
 				break;
 			}
 		}	
+		incrRegs();		
     } else {
 	printf("Unexpected user mode exception %d %d\n", which, type);
 	ASSERT(FALSE);
@@ -172,15 +182,21 @@ void myYield(){
 
 // Helper func to create new process in register.
 void newProc(int arg){
+	/*printf("***exec stuf\n");
+	printf("currentThread: %p\n", currentThread);
+	printf("currentThread->space: %p\n", currentThread->space);
+	printf("currentThread->space->pcb: %p\n", currentThread->space->pcb);
+	printf("currentThread->space->pcb->pid: %i\n", currentThread->space->pcb->pid);*/
 	currentThread->space->InitRegisters(); 
 	currentThread->space->SaveState();
 	currentThread->space->RestoreState(); 
+	//printf("before run\n");
 	machine->Run();	
 }
 
 // Exec system call
-int myExec(char *file){
-	
+SpaceId myExec(char *file){
+	//printf("passed to exec: %s\n", file);
 	int spaceID;
 	OpenFile *executable = fileSystem->Open(file);
 	
@@ -198,11 +214,12 @@ int myExec(char *file){
 	spaceID = pcb->pid;	
 	ASSERT(pcb->pid!=-1);
 	
+	/*
 	printf("currentThread: %p\n", currentThread);
 	printf("currentThread->space: %p\n", currentThread->space);
 	printf("currentThread->space->pcb: %p\n", currentThread->space->pcb);
 	printf("currentThread->space->pcb->pid: %i\n", currentThread->space->pcb->pid);
-	
+	*/
 	pcb->parentPid = currentThread->space->pcb->pid;	
 	pcb->thread = t;
 	space->pcb = pcb;	

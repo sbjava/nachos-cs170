@@ -65,6 +65,8 @@ AddrSpace::AddrSpace(OpenFile *executable)
     NoffHeader noffH;
     unsigned int i, size;
 
+	int read;
+
     executable->ReadAt((char *)&noffH, sizeof(noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) && (WordToHost(noffH.noffMagic) == NOFFMAGIC))
     	SwapHeader(&noffH);
@@ -103,18 +105,15 @@ AddrSpace::AddrSpace(OpenFile *executable)
 
 // then, copy in the code and data segments into memory
     if (noffH.code.size > 0) {
-        DEBUG('a', "Initializing code segment, at 0x%x, size %d\n", 
-			noffH.code.virtualAddr, noffH.code.size);
-        executable->ReadAt(&(machine->mainMemory[noffH.code.virtualAddr]),
-			noffH.code.size, noffH.code.inFileAddr);
+        DEBUG('a', "Initializing code segment, at 0x%x, size %d\n",noffH.code.virtualAddr, noffH.code.size);//
+        //executable->ReadAt(&(machine->mainMemory[noffH.code.virtualAddr]),noffH.code.size, noffH.code.inFileAddr);
+		read = ReadFile(noffH.code.virtualAddr,executable,noffH.code.size,noffH.code.inFileAddr);
     }
     if (noffH.initData.size > 0) {
-        DEBUG('a', "Initializing data segment, at 0x%x, size %d\n", 
-			noffH.initData.virtualAddr, noffH.initData.size);
-        executable->ReadAt(&(machine->mainMemory[noffH.initData.virtualAddr]),
-			noffH.initData.size, noffH.initData.inFileAddr);
+        DEBUG('a', "Initializing data segment, at 0x%x, size %d\n",noffH.initData.virtualAddr, noffH.initData.size);
+        //executable->ReadAt(&(machine->mainMemory[noffH.initData.virtualAddr]),noffH.initData.size, noffH.initData.inFileAddr);
+		read = ReadFile(noffH.initData.virtualAddr,executable,noffH.initData.size,noffH.initData.inFileAddr);
     }
-
 }
 
 AddrSpace::AddrSpace() {
@@ -221,7 +220,6 @@ AddrSpace::Translate(int vAddr, int *physAddr)
 
     *physAddr = pageTable[vpn].physicalPage * PageSize + offset;  // should it be ".physicalPage" ???
     return true;
-    
 }
 
 //---------------------------------------------------------------------
@@ -253,7 +251,7 @@ AddrSpace::ReadFile(int virtAddr, OpenFile* file, int size, int fileAddr)
     while(bytesLeft > 0)
     { 
         bool valid = Translate(virtAddr, &physAddr);
-	if(valid < 0)
+		if(valid < 0)
         {
             DEBUG('a',"virtual address could not be translated\n");
 	    return -1;   // could not translate virtAddr... there is an issue
