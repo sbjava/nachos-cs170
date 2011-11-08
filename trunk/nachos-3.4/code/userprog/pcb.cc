@@ -15,6 +15,7 @@ PCB::PCB(){
 	pid = -1;
 	parentPid = -1;
 	thread = 0;
+	status = -1;
 }
 
 // PCB::~PCB

@@ -50,6 +50,7 @@
 void myFork(int);
 void myYield();
 SpaceId myExec(char *);
+int myJoin(int);
 
 void incrRegs(){
 	int pc = machine->ReadRegister(PCReg);
@@ -105,6 +106,13 @@ ExceptionHandler(ExceptionType which)
 				machine->WriteRegister(2, pid);
 				break;
 			}
+			case SC_Join:
+			{
+				int arg = machine->ReadRegister(4);
+				pid = myJoin(arg);
+				machine->WriteRegister(2, pid);
+				break;
+			}	
 		}	
 		incrRegs();		
     } else {
@@ -113,17 +121,10 @@ ExceptionHandler(ExceptionType which)
     }
 }
 
+/////////////////////////////////
 // Dummy function used by myFork
+/////////////////////////////////
 void myForkHelper(int funcAddr) {
-	/*int* stateData = (int*)funcAddr;
-	for(int i=0; i<NumTotalRegs; i++)
-		machine->WriteRegister(i, stateData[i]);
-	delete[] stateData;
-	
-	currentThread->space->RestoreState();
-	machine->Run();
-	ASSERT(FALSE);*/
-	// ^ Old
 	currentThread->space->RestoreState(); // load page table register
 	machine->WriteRegister(PCReg, funcAddr);
 	machine->WriteRegister(NextPCReg, funcAddr + 4);
@@ -131,30 +132,11 @@ void myForkHelper(int funcAddr) {
 	ASSERT(FALSE); // machine->Run never returns;	
 }
 
+/////////////////////////////////
 // Fork system call
+/////////////////////////////////
 void myFork(int funcAddr){
-	/*
-	// Check funcAddr
-	if(funcAddr < 0) {
-		printf("The address of this function is invalid.");
-		return;
-	}
-	AddrSpace *addrSpace = currentThread->space;
-	Thread *thread = new Thread("forked thread");	
-	thread->space = addrSpace;
-	
-	// save PC, return, and other machine registers before fork and yield
-	addrSpace->SaveState();
-	int* currStateData = new int[NumTotalRegs];
-	for(int i=0; i<NumTotalRegs; i++)
-		currStateData[i] = machine->ReadRegister(i);
-		
-	currStateData[PCReg] = funcAddr;
-	currStateData[NextPCReg] = funcAddr+4;		
-		
-	thread->Fork(myForkHelper, (int)currStateData);		
-	currentThread->Yield();	*/
-	//^Old
+
 	AddrSpace *space = currentThread->space->Duplicate();
 	if(space==NULL)
 		return;
@@ -180,7 +162,9 @@ void myYield(){
 	currentThread->Yield();
 }
 
+/////////////////////////////////
 // Helper func to create new process in register.
+/////////////////////////////////
 void newProc(int arg){
 	/*printf("***exec stuf\n");
 	printf("currentThread: %p\n", currentThread);
@@ -194,7 +178,9 @@ void newProc(int arg){
 	machine->Run();	
 }
 
+/////////////////////////////////
 // Exec system call
+/////////////////////////////////
 SpaceId myExec(char *file){
 	//printf("passed to exec: %s\n", file);
 	int spaceID;
@@ -231,4 +217,17 @@ SpaceId myExec(char *file){
 	return spaceID;	
 }
 
+/////////////////////////////////
+// Join system call
+/////////////////////////////////
+int myJoin(int arg){
+	currentThread->space->pcb->status = BLOCKED;
+
+	if(procManager->getStatus(arg) < 0)
+		return procManager->getStatus(arg);
+		
+	procManager->Join(arg);
+	currentThread->space->pcb->status = RUNNING;
+	return procManager->getStatus(arg);	
+}
 
