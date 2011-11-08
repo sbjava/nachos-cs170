@@ -117,6 +117,9 @@ AddrSpace::AddrSpace(OpenFile *executable)
 
 }
 
+AddrSpace::AddrSpace() {
+}
+
 //----------------------------------------------------------------------
 // AddrSpace::~AddrSpace
 // 	Dealloate an address space.  Nothing for now!
@@ -169,7 +172,11 @@ AddrSpace::InitRegisters()
 //----------------------------------------------------------------------
 
 void AddrSpace::SaveState() 
-{}
+{
+	for(int i = 0; i<NumTotalRegs; i++){
+		progRegisters[i] = machine->ReadRegister(i);
+	}
+}
 
 //----------------------------------------------------------------------
 // AddrSpace::RestoreState
@@ -183,6 +190,9 @@ void AddrSpace::RestoreState()
 {
     machine->pageTable = pageTable;
     machine->pageTableSize = numPages;
+	for(int i = 0; i < NumTotalRegs; i++){
+		machine->WriteRegister(i, progRegisters[i]);
+	}
 }
 
 //---------------------------------------------------------------------
@@ -270,3 +280,29 @@ AddrSpace::ReadFile(int virtAddr, OpenFile* file, int size, int fileAddr)
     
     return actualSize;                
 }
+
+//Function to make a copy of an address space
+AddrSpace*
+AddrSpace::Duplicate(){
+	if(numPages > memManager->getAvailable())
+		return NULL;
+
+	AddrSpace* dup = new AddrSpace();
+	dup->numPages = this->numPages;
+	dup->pageTable = new TranslationEntry[numPages];
+	for (int i = 0; i < numPages; i++) {
+	    dup->pageTable[i].virtualPage = i;
+	    dup->pageTable[i].physicalPage = memManager->getPage();
+	    dup->pageTable[i].valid = this->pageTable[i].valid;
+	    dup->pageTable[i].use = this->pageTable[i].use;
+	    dup->pageTable[i].dirty = this->pageTable[i].dirty;
+	    dup->pageTable[i].readOnly = this->pageTable[i].readOnly;
+	    bcopy(machine->mainMemory + this->pageTable[i].physicalPage * PageSize,
+	                    machine->mainMemory + dup->pageTable[i].physicalPage
+	                                    * PageSize, PageSize);
+	}
+	
+	return dup;	
+}
+
+

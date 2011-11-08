@@ -37,17 +37,26 @@ StartProcess(char *filename)
 	//ORIGINAL VVVV
     OpenFile *executable = fileSystem->Open(filename);
     AddrSpace *space;
+	PCB* pcb = new PCB();
 
     if (executable == NULL) {
-	printf("Unable to open file %s\n", filename);
-	return;
+		printf("Unable to open file %s\n", filename);
+		return;
     }
     space = new AddrSpace(executable);    
-    currentThread->space = space;
+	pcb->parentPid = -1;
+	pcb->pid = procManager->getPID();
+	pcb->thread = currentThread;
+	space->pcb = pcb;
+
+	currentThread->space = space;
+	
+	procManager->insertProcess(pcb, pcb->pid);
 
     delete executable;			// close file
 
     space->InitRegisters();		// set the initial register values
+    space->SaveState();
     space->RestoreState();		// load page table register
 
     machine->Run();			// jump to the user progam

@@ -81,6 +81,7 @@ ExceptionHandler(ExceptionType which)
 			}
 			case SC_Exec:
 			{
+				printf("in myexec\n");
 				int position = 0;
 			    int arg = machine->ReadRegister(4);
 			    int value;
@@ -91,6 +92,7 @@ ExceptionHandler(ExceptionType which)
 			        arg++;
 			    }
 				pid = myExec(fileName);
+				printf("pid returned from myExec: %d\n", pid);
 				machine->WriteRegister(2, pid);
 				break;
 			}
@@ -103,18 +105,25 @@ ExceptionHandler(ExceptionType which)
 
 // Dummy function used by myFork
 void myForkHelper(int funcAddr) {
-	int* stateData = (int*)funcAddr;
+	/*int* stateData = (int*)funcAddr;
 	for(int i=0; i<NumTotalRegs; i++)
 		machine->WriteRegister(i, stateData[i]);
 	delete[] stateData;
 	
 	currentThread->space->RestoreState();
 	machine->Run();
-	ASSERT(FALSE);
+	ASSERT(FALSE);*/
+	// ^ Old
+	currentThread->space->RestoreState(); // load page table register
+	machine->WriteRegister(PCReg, funcAddr);
+	machine->WriteRegister(NextPCReg, funcAddr + 4);
+	machine->Run(); // jump to the user progam
+	ASSERT(FALSE); // machine->Run never returns;	
 }
 
 // Fork system call
 void myFork(int funcAddr){
+	/*
 	// Check funcAddr
 	if(funcAddr < 0) {
 		printf("The address of this function is invalid.");
@@ -134,7 +143,26 @@ void myFork(int funcAddr){
 	currStateData[NextPCReg] = funcAddr+4;		
 		
 	thread->Fork(myForkHelper, (int)currStateData);		
+	currentThread->Yield();	*/
+	//^Old
+	AddrSpace *space = currentThread->space->Duplicate();
+	if(space==NULL)
+		return;
+	
+	PCB *pcb = new PCB();
+	Thread* thread = new Thread("new forked thread.");
+	
+	pcb->thread = thread;
+	pcb->pid = procManager->getPID();
+	ASSERT(pcb->pid!=-1);
+	pcb->parentPid = currentThread->space->pcb->pid; 
+	space->pcb = pcb;
+	thread->space = space;
+	procManager->insertProcess(pcb, pcb->pid);
+	space->SaveState();
+	thread->Fork(myForkHelper, funcAddr);
 	currentThread->Yield();	
+		
 }
 
 // Yield system call
@@ -160,43 +188,30 @@ int myExec(char *file){
 		printf("Unable to open file %s\n", file);
 		return -1;
 	}
-	printf("Exec Test 1 \n");
 	AddrSpace *space;
+	space = new AddrSpace(executable);	
+	
 	PCB* pcb = new PCB();
+	pcb->pid = procManager->getPID();		
 	Thread *t = new Thread("Forked process");
-	space = new AddrSpace(executable);
-	printf("Exec Test 2 \n");
-	
 	pcb->pid = procManager->getPID();
-	spaceID = pcb->pid;
-	
+	spaceID = pcb->pid;	
 	ASSERT(pcb->pid!=-1);
-	printf("Exec Test 3jdasd \n");
-	printf("currentThread: %p", currentThread);
-	printf("currentThread->space: %p", currentThread->space);
-	printf("currentThread->space->pcb: %p", currentThread->space->pcb);
-	printf("currentThread->space->pcb->pid: %i", currentThread->space->pcb->pid);
-
-	pcb->parentPid = currentThread->space->pcb->pid;
-	printf("Exec Test 3a\n");
 	
+	printf("currentThread: %p\n", currentThread);
+	printf("currentThread->space: %p\n", currentThread->space);
+	printf("currentThread->space->pcb: %p\n", currentThread->space->pcb);
+	printf("currentThread->space->pcb->pid: %i\n", currentThread->space->pcb->pid);
+	
+	pcb->parentPid = currentThread->space->pcb->pid;	
 	pcb->thread = t;
-	printf("Exec Test 3b \n");
-	
-	//space->pcb = pcb;
-	printf("Exec Test 3c \n");
-	
-	t->space = space;
-	printf("Exec Test 3d \n");
-	
+	space->pcb = pcb;	
+	t->space = space;	
 	procManager->insertProcess(pcb, pcb->pid);
-	printf("Exec Test 4 \n");
 	delete executable;
-	printf("Exec Test 5 \n");
-	t->Fork(newProc, NULL);
+	t->Fork(newProc, NULL);	
 	currentThread->Yield();
-	return spaceID;
-	
+	return spaceID;	
 }
 
 

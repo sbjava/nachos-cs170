@@ -12,8 +12,8 @@
 // PCB::PCB
 // Initialize a PCB
 PCB::PCB(){
-	pid = 0;
-	parentPid = 0;
+	pid = -1;
+	parentPid = -1;
 	thread = 0;
 }
 
