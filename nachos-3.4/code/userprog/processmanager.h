@@ -3,6 +3,7 @@
 
 
 #include "bitmap.h"
+#include "synch.h"
 #define MAX_PROCESSES PageSize //<< needs to be changed to PageSize
 
 class PCB;
@@ -24,8 +25,8 @@ private:
 	PCB** pcbs;		// an array of PCB* to store the PCBs
 	Condition **conditions;	// for join and exit
 	Lock **locks;		// for join and exit
-	int pcbStatus[MAX_PROCESESS];		// array of PCB statuses
-	int joinProcessNum[MAX_PROCESESS];	// array of join process numbers
+	int pcbStatus[MAX_PROCESSES];		// array of PCB statuses
+	int joinProcessNum[MAX_PROCESSES];	// array of join process numbers
 };
 
 #endif

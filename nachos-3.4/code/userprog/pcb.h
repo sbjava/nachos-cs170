@@ -9,10 +9,10 @@
 #ifndef PCB_H_
 #define PCB_H_
 
-#define GOOD 0;
-#define BAD 1;
-#define RUNNING 2;
-#define BLOCKED 3;
+#define PCB_GOOD 0;
+#define PCB_BAD 1;
+#define PCB_RUNNING 2;
+#define PCB_BLOCKED 3;
 
 class Thread;
 

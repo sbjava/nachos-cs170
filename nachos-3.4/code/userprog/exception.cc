@@ -51,6 +51,7 @@ void myFork(int);
 void myYield();
 SpaceId myExec(char *);
 int myJoin(int);
+void myExit(int);
 
 void incrRegs(){
 	int pc = machine->ReadRegister(PCReg);
@@ -113,6 +114,12 @@ ExceptionHandler(ExceptionType which)
 				machine->WriteRegister(2, pid);
 				break;
 			}	
+			case SC_Exit:
+			{
+				int arg = machine->ReadRegister(4);
+				myExit(arg);
+				break;
+			}
 		}	
 		incrRegs();		
     } else {
@@ -226,8 +233,22 @@ int myJoin(int arg){
 	if(procManager->getStatus(arg) < 0)
 		return procManager->getStatus(arg);
 		
-	procManager->Join(arg);
+	procManager->join(arg);
 	currentThread->space->pcb->status = RUNNING;
 	return procManager->getStatus(arg);	
 }
+
+/////////////////////////////////
+// Exit system call
+/////////////////////////////////
+void myExit(int status){
+	int pid = currentThread->space->pcb->pid;
+	procManager->Broadcast(pid);
+	delete currentThread->space;
+	currentThread->space = NULL;
+	procManager->clearPID(pid);
+	currentThread->Finish();
+}
+
+
 
