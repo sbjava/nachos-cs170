@@ -14,8 +14,10 @@ public:
     char * fileName;    // file name and the number of user processes accessing
     int fileID;
     int numUsersAccess;	// Number of user processes accessing
+	BitMap usedFiles;
     void closeOne();	//close a SysOpenFile and accessing processes
-    void close();   //close all SysOpenFile and accessing processes                                         
+    void close();   //close all SysOpenFile and accessing processes  
+                    
 };
 /*
 // The following class defines a "SysOpenFileManager"

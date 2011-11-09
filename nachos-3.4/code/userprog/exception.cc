@@ -53,6 +53,7 @@ SpaceId myExec(char *);
 int myJoin(int);
 void myExit(int);
 void myCreate(char *);
+OpenFileId myOpen(char *);
 
 void incrRegs(){
 	int pc = machine->ReadRegister(PCReg);
@@ -134,6 +135,21 @@ ExceptionHandler(ExceptionType which)
 				}
 				
 				myCreate(fileName);
+				break;
+			}
+			case SC_Open:
+			{
+				int position = 0;
+				int arg = machine->ReadRegister(4);
+				int value;
+				while(value != NULL){
+					machine->ReadMem(arg, 1, &value);
+					fileName[position] = (char) value;
+					position++;
+					arg++;
+				}
+				int index = myOpen(fileName);
+				machine->WriteRegister(2, index);				
 				break;
 			}
 		}	
@@ -282,5 +298,51 @@ void myCreate(char *fileName){
 	ASSERT(fileCreationWorked);
 }
 
+/////////////////////////////////
+// Open system call
+/////////////////////////////////
+OpenFileId myOpen(char *name){
+	printf("System Call: %d invoked Open\n", currentThread->space->pcb->pid);
+	
+	int index = 0;
+	
+	
+	SysOpenFile *sFile= NULL;
+	
+	for(int i = 0; i < MAX_FILES; i++){
+		if(openFilesArray[i] != NULL && strcmp(openFilesArray[i]->fileName, name)==0){
+			sFile = openFilesArray[i];
+			index = i;
+		}
+	}
+	
+	if (sFile == NULL) {
+		OpenFile *oFile = fileSystem->Open(name);
+		if (oFile == NULL) {
+			return -1;
+		}
+		SysOpenFile *sysFile;
+		sysFile->file = oFile;
+		sysFile->numUsersAccess = 1;
+		strcpy(sysFile->fileName, name);
+		for(int i = 0; i < MAX_FILES; i++){
+			if(openFilesArray[i] == NULL){
+				openFilesArray[i] = sysFile;
+				index = i;
+				break;
+			}
+		}
+		
+		//index = fileManager->Add(sysFile);
+	}
+	else{
+		sFile->numUsersAccess++;
+	}
+	UserOpenFile *uFile;
+	uFile->indexPosition = index;
+	uFile->offset = 0;
+	OpenFileId oFileId = currentThread->space->pcb->Add(uFile);
+	return oFileId;	
+}
 
 
