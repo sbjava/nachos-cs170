@@ -34,7 +34,7 @@ Machine *machine;	// user program memory and registers
 
 MemoryManager *memManager;
 ProcessManager *procManager;
-SysOpenFile *openFileArray[MAX_FILES];
+SysOpenFile *openFilesArray[MAX_FILES];
 
 #endif
 #endif
@@ -163,7 +163,7 @@ Initialize(int argc, char **argv)
     memManager = new MemoryManager();
     procManager = new ProcessManager();
     for(int i = 0; i < MAX_FILES; i++)
-	openFileArray[i] = NULL;
+		openFilesArray[i] = NULL;
 
 #endif
 #endif

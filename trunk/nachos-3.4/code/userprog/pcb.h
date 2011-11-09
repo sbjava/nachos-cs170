@@ -30,6 +30,7 @@ public:
 	UserOpenFile* getFile(int id);
 	PCB();
 	~PCB();
+	int Add(UserOpenFile *file);
 };
 
 #endif
