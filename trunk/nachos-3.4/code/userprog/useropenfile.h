@@ -12,6 +12,8 @@ public:
 	char* fileName;
     int offset;
     int indexPosition;
+	UserOpenFile();
+	~UserOpenFile();
 };
 
 #endif
