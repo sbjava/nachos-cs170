@@ -16,12 +16,25 @@ PCB::PCB(){
 	parentPid = -1;
 	thread = 0;
 	status = -1;
+	
+	// Make sure to initialize the array of UserOpenFile's
+	for(int i = 0; i < MAX_FILES; i++)
+		fileArray[i] = 0; 
 }
 
 // PCB::~PCB
 // Deallocate PCB
 PCB::~PCB(){	
 	
+}
+
+UserOpenFile*
+PCB::getFile(int id){
+	for(int i=0; i < MAX_FILES; i++)
+		if(fileArray[i] != 0 && fileArray[i]->indexPosition == id)
+			return fileArray[i];
+	
+	return 0;
 }
 
 

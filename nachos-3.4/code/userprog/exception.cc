@@ -52,6 +52,7 @@ void myYield();
 SpaceId myExec(char *);
 int myJoin(int);
 void myExit(int);
+void myCreate(char *);
 
 void incrRegs(){
 	int pc = machine->ReadRegister(PCReg);
@@ -65,7 +66,7 @@ void
 ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
-	char fileName[128];
+	char* fileName = new char[128];
 	int pid;
 	
     if(which == SyscallException)
@@ -120,6 +121,21 @@ ExceptionHandler(ExceptionType which)
 				myExit(arg);
 				break;
 			}
+			case SC_Create:
+			{
+				int position = 0;
+				int arg = machine->ReadRegister(4);
+				int value;
+				while(value != NULL){
+					machine->ReadMem(arg, 1, &value);
+					fileName[position] = (char) value;
+					position++;
+					arg++;
+				}
+				
+				myCreate(fileName);
+				break;
+			}
 		}	
 		incrRegs();		
     } else {
@@ -143,7 +159,8 @@ void myForkHelper(int funcAddr) {
 // Fork system call
 /////////////////////////////////
 void myFork(int funcAddr){
-
+	printf("System Call: %d invoked Fork\n", currentThread->space->pcb->pid);
+	
 	AddrSpace *space = currentThread->space->Duplicate();
 	if(space==NULL)
 		return;
@@ -166,6 +183,7 @@ void myFork(int funcAddr){
 
 // Yield system call
 void myYield(){
+	printf("System Call: %d invoked Yield\n", currentThread->space->pcb->pid);
 	currentThread->Yield();
 }
 
@@ -189,7 +207,9 @@ void newProc(int arg){
 // Exec system call
 /////////////////////////////////
 SpaceId myExec(char *file){
-	//printf("passed to exec: %s\n", file);
+	printf("System Call: %d invoked Exec\n", currentThread->space->pcb->pid);
+	printf("Exec Program: %d loading %s\n", currentThread->space->pcb->pid, file);
+	
 	int spaceID;
 	OpenFile *executable = fileSystem->Open(file);
 	
@@ -228,8 +248,10 @@ SpaceId myExec(char *file){
 // Join system call
 /////////////////////////////////
 int myJoin(int arg){
+	printf("System Call: %d invoked Join\n", currentThread->space->pcb->pid);
+	
 	currentThread->space->pcb->status = BLOCKED;
-
+	
 	if(procManager->getStatus(arg) < 0)
 		return procManager->getStatus(arg);
 		
@@ -242,12 +264,22 @@ int myJoin(int arg){
 // Exit system call
 /////////////////////////////////
 void myExit(int status){
+	printf("System Call: %d invoked Exit\n", currentThread->space->pcb->pid);
 	int pid = currentThread->space->pcb->pid;
 	procManager->Broadcast(pid);
 	delete currentThread->space;
 	currentThread->space = NULL;
 	procManager->clearPID(pid);
 	currentThread->Finish();
+}
+
+/////////////////////////////////
+// Create system call
+/////////////////////////////////
+void myCreate(char *fileName){
+	printf("System Call: %d invoked Create\n", currentThread->space->pcb->pid);
+	bool fileCreationWorked = fileSystem->Create(fileName, 0);
+	ASSERT(fileCreationWorked);
 }
 
 
