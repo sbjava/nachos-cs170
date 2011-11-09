@@ -36,10 +36,13 @@ extern Machine* machine;	// user program memory and registers
 #ifdef CHANGED
 #include "memorymanager.h"
 #include "processmanager.h"
+#include "sysopenfile.h"
+
+#define MAX_FILES 30
 
     extern MemoryManager *memManager;
     extern ProcessManager *procManager;
-
+    extern SysOpenFile* openFilesArray[MAX_FILES];
 #endif
 #endif
 
