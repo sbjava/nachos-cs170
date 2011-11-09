@@ -5,7 +5,6 @@
 //     array of SysOpenFile objects for use by all system calls implemented.
 
 #include "sysopenfile.h"
-#include "myutilities.h"
 
 //----------------------------------------------------------------------
 // SysOpenFile::closeOne
@@ -14,10 +13,10 @@
 
 void SysOpenFile::closeOne() 
 {
-    if(userOpens <= 0)
-	return;
-    userOpens--;
-    if (userOpens == 0) 
+    if(numUsersAccess <= 0)
+		return;
+    numUsersAccess--;
+    if (numUsersAccess == 0) 
     {
         delete fileName;
         delete file;
@@ -29,9 +28,9 @@ void SysOpenFile::closeOne()
 //----------------------------------------------------------------------
 void SysOpenFile::close() 
 {
-    if (userOpens <= 0)
+    if (numUsersAccess <= 0)
 	return;
-    userOpens = 0;
+    numUsersAccess = 0;
     delete fileName;
     delete file;
 }
