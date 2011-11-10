@@ -54,6 +54,10 @@ int myJoin(int);
 void myExit(int);
 void myCreate(char *);
 OpenFileId myOpen(char *);
+int myRead(int, int, OpenFileId);
+void myWrite(int, int, OpenFileId);
+void myClose(OpenFileId);
+
 
 void incrRegs(){
 	int pc = machine->ReadRegister(PCReg);
@@ -150,6 +154,29 @@ ExceptionHandler(ExceptionType which)
 				}
 				int index = myOpen(fileName);
 				machine->WriteRegister(2, index);				
+				break;
+			}
+			case SC_Read:
+			{
+				int arg1 = machine->ReadRegister(4);
+				int arg2 = machine->ReadRegister(5);
+				int arg3 = machine->ReadRegister(6);
+				int tmp = myRead(arg1, arg2, arg3);
+				machine->WriteRegister(2, tmp);
+				break;
+			}
+			case SC_Write:
+			{
+				int arg1 = machine->ReadRegister(4);
+				int arg2 = machine->ReadRegister(5);
+				int arg3 = machine->ReadRegister(6);
+				myWrite(arg1, arg2, arg3);			
+				break;
+			}
+			case SC_Close:
+			{
+				int arg1 = machine->ReadRegister(4);
+				myClose(arg1);
 				break;
 			}
 		}	
@@ -344,5 +371,96 @@ OpenFileId myOpen(char *name){
 	OpenFileId oFileId = currentThread->space->pcb->Add(uFile);
 	return oFileId;	
 }
+
+/////////////////////////////////
+// Read system call
+/////////////////////////////////
+int myRead(int bufferAddress, int size, OpenFileId id){
+	printf("System Call: %d invoked Read\n", currentThread->space->pcb->pid);
+	char *buffer = new char[size + 1];
+	int sizeCopy = size;
+	
+	if (id == ConsoleInput) {
+		int count = 0;
+
+		while (count < size) {
+			buffer[count]=getchar();
+			count++;
+		}
+	} 
+	else {
+		UserOpenFile* userFile =  currentThread->space->pcb->getFile(id);
+		if(userFile == NULL)
+			return 0;
+			
+		//SysOpenFile *sysFile = fileManager->getFile(userFile->fileIndex);	
+		SysOpenFile *sFile= NULL;		
+		//new fileManager = openFilesArray
+		if(openFilesArray[userFile->indexPosition] != NULL)
+			sFile = openFilesArray[userFile->indexPosition];
+			
+		sizeCopy = sFile->file->ReadAt(buffer,size,userFile->offset);
+		userFile->offset+=sizeCopy;
+	}
+	//---------Need a read write func----------
+	//ReadWrite(bufferAddr,buffer,sizeCopy,USER_READ);
+	//-----------------------------------------
+	delete[] buffer;
+	return sizeCopy;	
+}
+
+/////////////////////////////////
+// Write system call
+/////////////////////////////////
+void myWrite(int bufferAddress, int size, OpenFileId id){
+	printf("System Call: %d invoked Write\n", currentThread->space->pcb->pid);
+	char* buffer = new char[size+1];
+	
+	//-----------Need this func------------------
+	//ReadWrite(bufferAddr,buffer,size,USER_WRITE);
+	//-------------------------------------------
+	
+	
+	if (id == ConsoleOutput) {
+		
+		buffer[size]=0;
+		printf("%s",buffer);
+		
+	} 
+	else {
+		buffer = new char[size];
+		int writeSize = ReadWrite(bufferAddr,buffer,size,USER_WRITE);
+		UserOpenFile* uFile =  currentThread->space->pcb->getFile(id);
+		if(uFile == NULL)
+			return ;
+			
+		SysOpenFile *sFile = NULL;
+		if(openFilesArray[userFile->indexPosition] != NULL)
+			sFile = openFilesArray[userFile->indexPosition];
+			
+		int bytes = sFile->file->WriteAt(buffer,size,userFile->offset);
+		userFile->offset+=bytes;
+	}
+	delete[] buffer;	
+}
+
+
+/////////////////////////////////
+// Close system call
+/////////////////////////////////
+void myClose(OpenFileId id){
+	printf("System Call: %d invoked Close\n", currentThread->space->pcb->pid);
+	UserOpenFile* userFile =  currentThread->space->pcb->Get(id);
+	if(userFile == NULL){
+		return ;
+	}
+	SysOpenFile *sFile = NULL;	
+	if(openFilesArray[userFile->indexPosition] != NULL)
+		sFile = openFilesArray[userFile->indexPosition];
+	
+	sFile->closeOne();
+	currentThread->space->pcb->Remove(id);
+}
+
 
 
