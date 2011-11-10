@@ -31,6 +31,7 @@ public:
 	PCB();
 	~PCB();
 	int Add(UserOpenFile *file);
+	bool Remove(int fileId);
 };
 
 #endif
