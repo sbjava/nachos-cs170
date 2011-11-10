@@ -450,7 +450,7 @@ void myWrite(int bufferAddress, int size, OpenFileId id){
 /////////////////////////////////
 void myClose(OpenFileId id){
 	printf("System Call: %d invoked Close\n", currentThread->space->pcb->pid);
-	UserOpenFile* userFile =  currentThread->space->pcb->Get(id);
+	UserOpenFile* userFile =  currentThread->space->pcb->getFile(id);
 	if(userFile == NULL){
 		return ;
 	}
