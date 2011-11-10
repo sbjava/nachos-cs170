@@ -403,7 +403,7 @@ int myRead(int bufferAddress, int size, OpenFileId id){
 		userFile->offset+=sizeCopy;
 	}
 	//---------Need a read write func----------
-	//ReadWrite(bufferAddr,buffer,sizeCopy,USER_READ);
+	ReadWrite(bufferAddr,buffer,sizeCopy,USER_READ);
 	//-----------------------------------------
 	delete[] buffer;
 	return sizeCopy;	
@@ -417,7 +417,7 @@ void myWrite(int bufferAddress, int size, OpenFileId id){
 	char* buffer = new char[size+1];
 	
 	//-----------Need this func------------------
-	//ReadWrite(bufferAddr,buffer,size,USER_WRITE);
+	ReadWrite(bufferAddr,buffer,size,USER_WRITE);
 	//-------------------------------------------
 	
 	
@@ -461,6 +461,4 @@ void myClose(OpenFileId id){
 	sFile->closeOne();
 	currentThread->space->pcb->Remove(id);
 }
-
-
 
