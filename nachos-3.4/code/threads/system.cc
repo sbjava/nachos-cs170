@@ -35,6 +35,36 @@ Machine *machine;	// user program memory and registers
 MemoryManager *memManager;
 ProcessManager *procManager;
 SysOpenFile *openFilesArray[MAX_FILES];
+char diskBuffer[PageSize];
+
+int ReadWrite(int virAddr, char* buffer, int size, int type) {
+	int physicAddr;
+	int pageSizeLeft;
+	int bytesCopied = 0;
+	if (type == USER_READ) {
+		while (size > 0) {
+			machine->Translate(virAddr, &physicAddr, size, FALSE);
+			pageSizeLeft = PageSize - (physicAddr) % PageSize;
+			int actualToCopy = min(pageSizeLeft,size);
+			bcopy(buffer + bytesCopied, machine->mainMemory + physicAddr,
+					actualToCopy);
+			size -= actualToCopy;
+			bytesCopied += actualToCopy;
+			virAddr += actualToCopy;
+		}
+	} else if (type == USER_WRITE) {
+		while (size > 0) {
+			machine->Translate(virAddr, &physicAddr, size, FALSE);
+			pageSizeLeft = PageSize - (physicAddr) % PageSize;
+			int actualToCopy = min(pageSizeLeft,size);
+			bcopy( machine->mainMemory + physicAddr,buffer + bytesCopied,actualToCopy);
+			size -= actualToCopy;
+			bytesCopied += actualToCopy;
+			virAddr += actualToCopy;
+		}
+	}
+	return bytesCopied;
+}
 
 #endif
 #endif

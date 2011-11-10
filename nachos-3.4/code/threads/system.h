@@ -33,6 +33,7 @@ extern Timer *timer;				// the hardware alarm clock
 #include "machine.h"
 extern Machine* machine;	// user program memory and registers
 
+
 #ifdef CHANGED
 #include "memorymanager.h"
 #include "processmanager.h"
@@ -43,6 +44,10 @@ extern Machine* machine;	// user program memory and registers
     extern MemoryManager *memManager;
     extern ProcessManager *procManager;
     extern SysOpenFile* openFilesArray[MAX_FILES];
+	extern char diskBuffer[PageSize];
+#define USER_READ 0
+#define USER_WRITE 1
+int ReadWrite(int virAddr, char* buffer, int size, int type);
 #endif
 #endif
 
