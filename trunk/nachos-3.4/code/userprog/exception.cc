@@ -25,6 +25,8 @@
 #include "system.h"
 #include "syscall.h"
 
+#define FILE_NAME_SIZE 128
+
 //----------------------------------------------------------------------
 // ExceptionHandler
 // 	Entry point into the Nachos kernel.  Called when a user program
@@ -57,6 +59,16 @@ OpenFileId myOpen(char *);
 int myRead(int, int, OpenFileId);
 void myWrite(int, int, OpenFileId);
 void myClose(OpenFileId);
+
+char* CloneString(char *old){
+	char * newString = new char[FILE_NAME_SIZE];
+	for (int i = 0; i < FILE_NAME_SIZE; i++) {
+		newString[i] = old[i];
+		if (old[i] == NULL)
+			break;
+	}
+	return newString;
+}
 
 
 void incrRegs(){
@@ -152,7 +164,12 @@ ExceptionHandler(ExceptionType which)
 					position++;
 					arg++;
 				}
-				int index = myOpen(fileName);
+				printf("before open: %s\n", fileName);
+				OpenFileId index = myOpen(fileName);
+				printf("openn\n");
+				printf("returned from open: %i\n", index);
+				if(index == -1)
+					printf("unable to open file\n");
 				machine->WriteRegister(2, index);				
 				break;
 			}
@@ -335,25 +352,40 @@ OpenFileId myOpen(char *name){
 	
 	
 	SysOpenFile *sFile= NULL;
-	
+	printf("open sys call\n");
 	for(int i = 0; i < MAX_FILES; i++){
+		printf("opening at %i\n", i);
 		if(openFilesArray[i] != NULL && strcmp(openFilesArray[i]->fileName, name)==0){
+			printf("opened2 at %i\n", i);
 			sFile = openFilesArray[i];
 			index = i;
 		}
+		
 	}
 	
 	if (sFile == NULL) {
+		printf("open3 at\n");
 		OpenFile *oFile = fileSystem->Open(name);
+		printf("open4 at\n");		
 		if (oFile == NULL) {
+			printf("ofile is %p\n", oFile);
 			return -1;
 		}
-		SysOpenFile *sysFile;
+		printf("open5 at\n");
+		
+		SysOpenFile *sysFile = new SysOpenFile();
 		sysFile->file = oFile;
 		sysFile->numUsersAccess = 1;
-		strcpy(sysFile->fileName, name);
+		sysFile->fileName = CloneString(name);
+		printf("open6 at\n");
+		//char* tmp[strlen(name)];
+		
+		//strcpy(tmp, name);
+		printf("open7 at %s\n", sysFile->fileName);
 		for(int i = 0; i < MAX_FILES; i++){
+			printf("openingAGAIN at %i\n", i);
 			if(openFilesArray[i] == NULL){
+				printf("openFilesArray[i]: %p\n", openFilesArray[i]);
 				openFilesArray[i] = sysFile;
 				index = i;
 				break;
@@ -365,10 +397,14 @@ OpenFileId myOpen(char *name){
 	else{
 		sFile->numUsersAccess++;
 	}
-	UserOpenFile *uFile;
+	printf("open8 at\n");
+	UserOpenFile *uFile = new UserOpenFile();
 	uFile->indexPosition = index;
 	uFile->offset = 0;
+	//uFile->fileName = name;
+	printf("open9 at: %s\n", uFile->fileName);	
 	OpenFileId oFileId = currentThread->space->pcb->Add(uFile);
+	printf("open10 at: %i\n", oFileId);	
 	return oFileId;	
 }
 
@@ -403,7 +439,7 @@ int myRead(int bufferAddress, int size, OpenFileId id){
 		userFile->offset+=sizeCopy;
 	}
 	//---------Need a read write func----------
-	ReadWrite(bufferAddr,buffer,sizeCopy,USER_READ);
+	ReadWrite(bufferAddress,buffer,sizeCopy,USER_READ);
 	//-----------------------------------------
 	delete[] buffer;
 	return sizeCopy;	
@@ -417,7 +453,7 @@ void myWrite(int bufferAddress, int size, OpenFileId id){
 	char* buffer = new char[size+1];
 	
 	//-----------Need this func------------------
-	ReadWrite(bufferAddr,buffer,size,USER_WRITE);
+	ReadWrite(bufferAddress,buffer,size,USER_WRITE);
 	//-------------------------------------------
 	
 	
@@ -429,17 +465,17 @@ void myWrite(int bufferAddress, int size, OpenFileId id){
 	} 
 	else {
 		buffer = new char[size];
-		int writeSize = ReadWrite(bufferAddr,buffer,size,USER_WRITE);
+		int writeSize = ReadWrite(bufferAddress,buffer,size,USER_WRITE);
 		UserOpenFile* uFile =  currentThread->space->pcb->getFile(id);
 		if(uFile == NULL)
 			return ;
 			
 		SysOpenFile *sFile = NULL;
-		if(openFilesArray[userFile->indexPosition] != NULL)
-			sFile = openFilesArray[userFile->indexPosition];
+		if(openFilesArray[uFile->indexPosition] != NULL)
+			sFile = openFilesArray[uFile->indexPosition];
 			
-		int bytes = sFile->file->WriteAt(buffer,size,userFile->offset);
-		userFile->offset+=bytes;
+		int bytes = sFile->file->WriteAt(buffer,size,uFile->offset);
+		uFile->offset+=bytes;
 	}
 	delete[] buffer;	
 }

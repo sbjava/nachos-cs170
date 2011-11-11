@@ -35,6 +35,19 @@ void SysOpenFile::close()
     delete file;
 }
 
+SysOpenFile::SysOpenFile():usedFiles(SOFILETABLE_SIZE)
+{
+	file = 0; 	// a pointer to the file system's OpenFile object
+    fileName = 0;    // file name and the number of user processes accessing
+    fileID = 0;
+    numUsersAccess = 0;	// Number of user processes accessing
+	//usedFiles = 0;	
+}
+
+SysOpenFile::~SysOpenFile()
+{
+	
+}
 /*
 //----------------------------------------------------------------------
 // SysOpenFileManager::SysOpenFileManager
