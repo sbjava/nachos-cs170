@@ -5,7 +5,6 @@
 #define SOFILETABLE_SIZE 100
 #include "filesys.h"
 #include "bitmap.h"
-
 // The following class defines a "SysOpenFile"
 
 class SysOpenFile{
@@ -17,7 +16,8 @@ public:
 	BitMap usedFiles;
     void closeOne();	//close a SysOpenFile and accessing processes
     void close();   //close all SysOpenFile and accessing processes  
-                    
+	SysOpenFile();
+	~SysOpenFile();               
 };
 /*
 // The following class defines a "SysOpenFileManager"
