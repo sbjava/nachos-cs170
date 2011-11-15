@@ -37,6 +37,7 @@ ProcessManager *procManager;
 SysOpenFile *openFilesArray[MAX_FILES];
 char diskBuffer[PageSize];
 
+
 int ReadWrite(int virAddr, char* buffer, int size, int type) {
 	int physicAddr;
 	int pageSizeLeft;
@@ -248,3 +249,4 @@ Cleanup()
     Exit(0);
 }
 
+	

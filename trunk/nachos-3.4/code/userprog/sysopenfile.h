@@ -19,21 +19,5 @@ public:
 	SysOpenFile();
 	~SysOpenFile();               
 };
-/*
-// The following class defines a "SysOpenFileManager"
-class SysOpenFileManager{
-public:
-    SysOpenFileManager();   // Initialize a SysOpenFileManager
-    ~SysOpenFileManager();  // De-allocate a SysOpenFileManager
-    int Add(SysOpenFile newSysOpenFile); //Add a SysOpenFile to the array
-    SysOpenFile* Get(char* fileName,int& index); // Get SysOpenFile by "fileName"
-    SysOpenFile* Get(int index);    // Get SysOpenFile by "index" of the array
-    void closeOne(int index);       // Close a SysOpenFile by "index"
-private:
-    SysOpenFile sysOpenFileTable[SOFILETABLE_SIZE]; // array for all SysOpenFile
-    BitMap bitMap;  // a BitMap for SysOpenFile manager methods
-
-};
-*/
 #endif /* SYSOPENFILE_H_ */
 

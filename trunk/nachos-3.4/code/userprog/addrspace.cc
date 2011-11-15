@@ -80,12 +80,17 @@ AddrSpace::AddrSpace(OpenFile *executable)
     numPages = divRoundUp(size, PageSize);
     size = numPages * PageSize;
 
-    ASSERT(numPages <= NumPhysPages);		// check we're not trying
+   	ASSERT(numPages <= NumPhysPages);		// check we're not trying
 						// to run anything too big --
 						// at least until we have
 						// virtual memory
-
-   // DEBUG('a', "Initializing address space, num pages %d, size %d\n", numPages, size);
+	/*if(numPages > memManager->getAvailable()){
+		printf("Not enough memory\n");
+		numPages = -1;
+		return;
+	}*/
+	
+   DEBUG('a', "Initializing address space, num pages %d, size %d\n", numPages, size);
 // first, set up the translation 
     pageTable = new TranslationEntry[numPages];
     for (i = 0; i < numPages; i++) {
@@ -114,6 +119,8 @@ AddrSpace::AddrSpace(OpenFile *executable)
         //executable->ReadAt(&(machine->mainMemory[noffH.initData.virtualAddr]),noffH.initData.size, noffH.initData.inFileAddr);
 		read = ReadFile(noffH.initData.virtualAddr,executable,noffH.initData.size,noffH.initData.inFileAddr);
     }
+
+	printf("Loaded Program: %d code | %d data | %d bss\n",noffH.code.size,noffH.initData.size,noffH.uninitData.size);
 }
 
 AddrSpace::AddrSpace() {
@@ -301,6 +308,11 @@ AddrSpace::Duplicate(){
 	}
 	
 	return dup;	
+}
+
+int
+AddrSpace::getNumPages(){
+	return numPages;
 }
 
 

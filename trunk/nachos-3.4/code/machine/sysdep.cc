@@ -222,7 +222,13 @@ WriteFile(int fd, char *buffer, int nBytes)
 void 
 Lseek(int fd, int offset, int whence)
 {
+	
     int retVal = lseek(fd, offset, whence);
+	//DEBUG('d', "****In lseek\n");
+	//DEBUG('d', "****retVal: %d\n", retVal);
+	//DEBUG('d', "****fd: %d\n", fd);
+	//DEBUG('d', "****offset: %d\n", offset);
+	//DEBUG('d', "****whence: %d\n", whence);	
     ASSERT(retVal >= 0);
 }
 

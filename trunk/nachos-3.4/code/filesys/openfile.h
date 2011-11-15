@@ -32,6 +32,7 @@ class OpenFile {
     ~OpenFile() { Close(file); }			// close the file
 
     int ReadAt(char *into, int numBytes, int position) { 
+			//DEBUG('d', "****what is file? %d\n", file);	
     		Lseek(file, position, 0); 
 		return ReadPartial(file, into, numBytes); 
 		}	
