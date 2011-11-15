@@ -47,6 +47,7 @@ StartProcess(char *filename)
 	pcb->parentPid = -1;
 	pcb->pid = procManager->getPID();
 	pcb->thread = currentThread;
+	pcb->status = PCB_RUNNING;
 	space->pcb = pcb;
 
 	currentThread->space = space;

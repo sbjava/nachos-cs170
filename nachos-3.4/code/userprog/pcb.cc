@@ -39,7 +39,7 @@ PCB::getFile(int id){
 
 int
 PCB::Add(UserOpenFile *file){
-	for(int i = 0; i<MAX_FILES; i++){
+	for(int i = 2; i<MAX_FILES; i++){
 		if(fileArray[i] == 0){
 			fileArray[i] = file;
 			return i;

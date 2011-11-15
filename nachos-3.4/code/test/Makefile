@@ -84,9 +84,3 @@ mix_test1.o: mix_test1.c
 mix_test1: mix_test1.o start.o
 	$(LD) $(LDFLAGS) start.o mix_test1.o -o mix_test1.coff
 	../bin/coff2noff mix_test1.coff mix_test1	
-
-mix_test2.o: mix_test2.c
-	$(CC) $(CFLAGS) -c mix_test2.c
-mix_test2: mix_test2.o start.o
-	$(LD) $(LDFLAGS) start.o mix_test2.o -o mix_test2.coff
-	../bin/coff2noff mix_test2.coff mix_test2

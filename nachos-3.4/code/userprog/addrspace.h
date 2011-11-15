@@ -38,6 +38,7 @@ class AddrSpace {
     // a physical address                                       
     bool Translate(int vAddr, int* physAddr);	
     int ReadFile(int virtAddr, OpenFile* file, int size, int fileAddr);
+	int getNumPages();
 	AddrSpace* Duplicate();
 
     PCB *pcb;				// Process Control Block for info 

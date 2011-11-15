@@ -164,12 +164,10 @@ ExceptionHandler(ExceptionType which)
 					position++;
 					arg++;
 				}
-				printf("before open: %s\n", fileName);
+				//printf("before open: %s\n", fileName);
 				OpenFileId index = myOpen(fileName);
-				printf("openn\n");
-				printf("returned from open: %i\n", index);
 				if(index == -1)
-					printf("unable to open file\n");
+					printf("Unable to open file\n");
 				machine->WriteRegister(2, index);				
 				break;
 			}
@@ -220,10 +218,12 @@ void myForkHelper(int funcAddr) {
 /////////////////////////////////
 void myFork(int funcAddr){
 	printf("System Call: %d invoked Fork\n", currentThread->space->pcb->pid);
-	
+	int currPid = currentThread->space->pcb->pid;
 	AddrSpace *space = currentThread->space->Duplicate();
-	if(space==NULL)
+	if(space==NULL){
+		printf("Process %d Fork: start at address 0x%X with %d pages memory failed\n", currentThread->space->pcb->pid,funcAddr,space->getNumPages());
 		return;
+	}
 	
 	PCB *pcb = new PCB();
 	Thread* thread = new Thread("new forked thread.");
@@ -236,6 +236,7 @@ void myFork(int funcAddr){
 	thread->space = space;
 	procManager->insertProcess(pcb, pcb->pid);
 	space->SaveState();
+	printf("Process %d Fork %d: start at address 0x%X with %d pages memory\n",currPid,pcb->pid,funcAddr,space->getNumPages());
 	thread->Fork(myForkHelper, funcAddr);
 	currentThread->Yield();	
 		
@@ -274,7 +275,7 @@ SpaceId myExec(char *file){
 	OpenFile *executable = fileSystem->Open(file);
 	
 	if(executable == NULL){
-		printf("Unable to open file %s\n", file);
+		printf("Exec Program: %d loading %s failed\n", currentThread->space->pcb->pid, file);
 		return -1;
 	}
 	AddrSpace *space;
@@ -325,6 +326,7 @@ int myJoin(int arg){
 /////////////////////////////////
 void myExit(int status){
 	printf("System Call: %d invoked Exit\n", currentThread->space->pcb->pid);
+	printf("Process %d exists with %d\n", currentThread->space->pcb->pid,status);
 	int pid = currentThread->space->pcb->pid;
 	procManager->Broadcast(pid);
 	delete currentThread->space;
@@ -348,44 +350,45 @@ void myCreate(char *fileName){
 OpenFileId myOpen(char *name){
 	printf("System Call: %d invoked Open\n", currentThread->space->pcb->pid);
 	
-	int index = 0;
-	
-	
+	int index = 0;	
 	SysOpenFile *sFile= NULL;
-	printf("open sys call\n");
-	for(int i = 0; i < MAX_FILES; i++){
-		printf("opening at %i\n", i);
+	//printf("open sys call\n");
+	for(int i = 2; i < MAX_FILES; i++){
+		//printf("opening at %i\n", i);
+		//checking to see if file already open
 		if(openFilesArray[i] != NULL && strcmp(openFilesArray[i]->fileName, name)==0){
-			printf("opened2 at %i\n", i);
+			//printf("opened2 at %i\n", i);
 			sFile = openFilesArray[i];
 			index = i;
-		}
-		
+		}		
 	}
 	
 	if (sFile == NULL) {
-		printf("open3 at\n");
+		//printf("open3 at\n");
 		OpenFile *oFile = fileSystem->Open(name);
-		printf("open4 at\n");		
+		//printf("open4 at\n");
+				
 		if (oFile == NULL) {
-			printf("ofile is %p\n", oFile);
+			// Here if file is unable to be opened
+			//printf("ofile is %p\n", oFile);
 			return -1;
 		}
-		printf("open5 at\n");
+		//printf("open5 at\n");
 		
 		SysOpenFile *sysFile = new SysOpenFile();
 		sysFile->file = oFile;
 		sysFile->numUsersAccess = 1;
 		sysFile->fileName = CloneString(name);
-		printf("open6 at\n");
+		//printf("open6 at\n");
 		//char* tmp[strlen(name)];
 		
 		//strcpy(tmp, name);
-		printf("open7 at %s\n", sysFile->fileName);
-		for(int i = 0; i < MAX_FILES; i++){
-			printf("openingAGAIN at %i\n", i);
+		//printf("open7 at %s\n", sysFile->fileName);
+		for(int i = 2; i < MAX_FILES; i++){
+			//printf("openingAGAIN at %i\n", i);
 			if(openFilesArray[i] == NULL){
-				printf("openFilesArray[i]: %p\n", openFilesArray[i]);
+				//Opened file placed at [i]
+				//printf("openFilesArray[i]: %p\n", openFilesArray[i]);
 				openFilesArray[i] = sysFile;
 				index = i;
 				break;
@@ -397,14 +400,14 @@ OpenFileId myOpen(char *name){
 	else{
 		sFile->numUsersAccess++;
 	}
-	printf("open8 at\n");
+	//printf("open8 at\n");
 	UserOpenFile *uFile = new UserOpenFile();
 	uFile->indexPosition = index;
 	uFile->offset = 0;
-	//uFile->fileName = name;
-	printf("open9 at: %s\n", uFile->fileName);	
+	//uFile->fileName = CloneString(name);
+	//printf("open9 at: %s\n", uFile->fileName);	
 	OpenFileId oFileId = currentThread->space->pcb->Add(uFile);
-	printf("open10 at: %i\n", oFileId);	
+	//printf("open10 at: %i\n", oFileId);	
 	return oFileId;	
 }
 
@@ -434,11 +437,18 @@ int myRead(int bufferAddress, int size, OpenFileId id){
 		//new fileManager = openFilesArray
 		if(openFilesArray[userFile->indexPosition] != NULL)
 			sFile = openFilesArray[userFile->indexPosition];
-			
+		
+		//printf("reading sFile->file: %d\n", sFile->file);
+		//printf("reading offset: %d\n",userFile->offset);
+		//printf("reading buffer: %p\n",buffer);
+		//printf("reading size: %d\n",size);			
 		sizeCopy = sFile->file->ReadAt(buffer,size,userFile->offset);
+		//printf("reading is now here\n");
 		userFile->offset+=sizeCopy;
 	}
 	//---------Need a read write func----------
+	//int ReadWrite(int virAddr, OpenFile *file, int size, int fileAddr, int type)	
+	//ReadWrite(bufferAddress, userFilesArray[id]->file, sizeCopy, )
 	ReadWrite(bufferAddress,buffer,sizeCopy,USER_READ);
 	//-----------------------------------------
 	delete[] buffer;
@@ -490,11 +500,15 @@ void myClose(OpenFileId id){
 	if(userFile == NULL){
 		return ;
 	}
+	int tmpIndex = userFile->indexPosition;
+	
 	SysOpenFile *sFile = NULL;	
 	if(openFilesArray[userFile->indexPosition] != NULL)
-		sFile = openFilesArray[userFile->indexPosition];
+		sFile = openFilesArray[tmpIndex];
 	
 	sFile->closeOne();
 	currentThread->space->pcb->Remove(id);
+	delete openFilesArray[tmpIndex];
+	openFilesArray[tmpIndex] = NULL;
 }
 
