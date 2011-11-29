@@ -22,6 +22,15 @@ PCB::PCB(){
 		fileArray[i] = 0; 
 }
 
+PCB::PCB(SpaceId currPid, SpaceId currParentPid, Thread* currThread, int currStatus){
+	pid = currPid;
+	parentPid = currParentPid;
+	thread = currThread;
+	status = currStatus;
+
+	for(int i = 0; i < MAX_FILES; i++)
+		fileArray[i] = 0;
+}
 // PCB::~PCB
 // Deallocate PCB
 PCB::~PCB(){	

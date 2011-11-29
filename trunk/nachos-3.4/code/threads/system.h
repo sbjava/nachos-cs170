@@ -38,13 +38,15 @@ extern Machine* machine;	// user program memory and registers
 #include "memorymanager.h"
 #include "processmanager.h"
 #include "sysopenfile.h"
+#include "vmManager.h"
 
 #define MAX_FILES 30
 
     extern MemoryManager *memManager;
     extern ProcessManager *procManager;
     extern SysOpenFile* openFilesArray[MAX_FILES];
-	extern char diskBuffer[PageSize];
+    extern VMManager *vm;	
+    extern char diskBuffer[PageSize];
 #define USER_READ 0
 #define USER_WRITE 1
 int ReadWrite(int virAddr, char* buffer, int size, int type);
