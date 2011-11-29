@@ -41,6 +41,55 @@
 bool
 FileHeader::Allocate(BitMap *freeMap, int fileSize)
 { 
+#ifdef FILESYS
+	if (fileSize> MaxFileSize){
+		printf("Unable to save file, bigger than max file size %d\n",MaxFileSize);
+		return false;
+	}
+    numBytes = fileSize;
+    numSectors  = divRoundUp(fileSize, SectorSize);
+    if (freeMap->NumClear() < numSectors)
+	return FALSE;		// not enough space
+
+    int i = 0;
+    int sectorsToAllocate = numSectors;
+
+    
+    DEBUG('f', "Allocating %d sectors for a file size of %d. Sector Size:%d. Max Direct:Indirect %d:%d. Sectors/Indirect %d. Max File Size:%d\n",  numSectors, fileSize, SectorSize, NumDirect,NumInDirect,MaxIndirectPointers,MaxFileSize);
+    
+    while(sectorsToAllocate > 0){
+	if (i < NumDirect){
+	  dataSectors[i] = freeMap->Find();
+	  sectorsToAllocate--;
+	  DEBUG('f', "\nAllocating new direct dataSector[%d]:%d\n" , (i),dataSectors[i]);
+	  
+	}
+	else{
+	  indirectPointers[i-NumDirect] = new IndirectPointerBlock();
+	  indirectSector[i-NumDirect] = freeMap->Find();
+	  DEBUG('f', "\nAllocating new indirectPointerBlock[%d]:%d\n" , (i-NumDirect),indirectSector[i-NumDirect]);
+	  int sectorsToAddToThisPage = sectorsToAllocate;
+	  if (sectorsToAddToThisPage > MaxIndirectPointers)
+	    sectorsToAddToThisPage = MaxIndirectPointers;
+	  for (int j = 0 ; j < sectorsToAddToThisPage; j++){
+	  
+	    //DEBUG('f', "Putting a sector to indirectPointer[%d].\n" , (i-NumDirect));
+	    int newSec = freeMap->Find();
+	    
+	    DEBUG('f', "-%d",newSec );
+	    indirectPointers[i-NumDirect]->PutSector(newSec);
+	    sectorsToAllocate--;
+	  }
+	  
+	}      
+     
+      i++;
+    }
+    DEBUG('f', "\nReturning True for filehdr alloc \n" );
+	    
+    return TRUE;
+    
+#else
     numBytes = fileSize;
     numSectors  = divRoundUp(fileSize, SectorSize);
     if (freeMap->NumClear() < numSectors)
@@ -48,7 +97,11 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
 
     for (int i = 0; i < numSectors; i++)
 	dataSectors[i] = freeMap->Find();
+	 DEBUG('f', "\nReturning True for filehdr alloc \n" );
     return TRUE;
+#endif
+    
+    
 }
 
 //----------------------------------------------------------------------
@@ -61,10 +114,28 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
 void 
 FileHeader::Deallocate(BitMap *freeMap)
 {
+
+
     for (int i = 0; i < numSectors; i++) {
-	ASSERT(freeMap->Test((int) dataSectors[i]));  // ought to be marked!
-	freeMap->Clear((int) dataSectors[i]);
+        DEBUG('f',"Delloc %d (%d)\n",numSectors, NumDirect);
+        if (numSectors < NumDirect){
+            ASSERT(freeMap->Test((int) dataSectors[i]));  // ought to be marked!
+            freeMap->Clear((int) dataSectors[i]);
+        }
     }
+    #ifdef FILESYS    
+    
+    if(numSectors > NumDirect){
+		int secs = numSectors;
+		if (secs > NumDirect) secs -= NumDirect;
+		int indirects = divRoundUp(secs,PointersPerIndirect);
+			
+		for(int i = 0; i < indirects; i++){
+		    indirectPointers[i]->Deallocate(freeMap);
+			freeMap->Clear(indirectSector[i]);
+		 }
+	}
+	#endif
 }
 
 //----------------------------------------------------------------------
@@ -77,7 +148,29 @@ FileHeader::Deallocate(BitMap *freeMap)
 void
 FileHeader::FetchFrom(int sector)
 {
-    synchDisk->ReadSector(sector, (char *)this);
+    
+#ifdef FILESYS
+	char* buf = new char[SectorSize];
+	bzero(buf,SectorSize);
+	synchDisk->ReadSector(sector, buf);
+	bcopy( buf,(char *) this, HdrSize);
+	DEBUG('f',"FileHdr fetched num Sectors:%d at sec:%d\n",numSectors,sector);
+	if (numSectors > NumDirect){
+        int indirects = divRoundUp((numSectors - NumDirect),PointersPerIndirect);
+      	for(int i = 0; i < indirects; i++){
+	    	DEBUG('f',"FileHdr fetch numSectors:%d numIndirects:%d\n",numSectors, indirects);
+
+			if (indirectSector[i] != 0){
+				DEBUG('f',"^^FileHdr fetchin IndirectPointer[%d] at sector:%d\n",i,indirectSector[i]);
+				indirectPointers[i] = new IndirectPointerBlock();
+				indirectPointers[i]->FetchFrom(indirectSector[i]);
+			}
+      }
+    }
+#else
+	synchDisk->ReadSector(sector, (char *)this);      
+      
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -90,7 +183,29 @@ FileHeader::FetchFrom(int sector)
 void
 FileHeader::WriteBack(int sector)
 {
-    synchDisk->WriteSector(sector, (char *)this); 
+    
+#ifdef FILESYS
+	char* buf = new char[SectorSize];
+	bzero(buf, SectorSize);
+	int t = HdrSize;
+	bcopy((char *) this, buf, HdrSize);
+	synchDisk->WriteSector(sector, buf); 
+	
+	DEBUG('f',"FileHdr writeBack num Sectors:%d at sec:%d\n",numSectors,sector);
+    if (numSectors > NumDirect){
+
+        int indirects = divRoundUp((numSectors - NumDirect),PointersPerIndirect);
+    	
+      	for(int i = 0; i < indirects; i++){
+	
+		DEBUG('f',"^^FileHdr Writing back IndirectPointer[%d] at sector:%d\n",i,indirectSector[i]);
+		if (indirectSector[i] != 0)
+			indirectPointers[i]->WriteBack(indirectSector[i]);
+      }
+    }
+#else       
+    synchDisk->WriteSector(sector, (char *)this);      
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -106,7 +221,26 @@ FileHeader::WriteBack(int sector)
 int
 FileHeader::ByteToSector(int offset)
 {
+  #ifdef FILESYS
+    DEBUG('f',"BytoSector :%d : ",offset);
+    
+    int sector = offset/ SectorSize;
+    if (sector < NumDirect){
+      DEBUG('f',"Direct Sector offset %d, is at sector: %d\n",sector,dataSectors[sector]);     
+      return dataSectors[sector];
+    }
+    else{
+      int relSec = divRoundDown((numSectors - NumDirect),PointersPerIndirect);
+      int newOff = offset - SectorSize * (NumDirect);
+      
+      DEBUG('f',"Indirect Sector offset %d, with newoffset is at: is at %d : \n",relSec,newOff);
+      DEBUG('f'," found at sector: %d\n",indirectPointers[relSec]->ByteToSector(newOff));
+      return indirectPointers[relSec]->ByteToSector(newOff);
+      
+    }
+  #else  
     return(dataSectors[offset / SectorSize]);
+  #endif
 }
 
 //----------------------------------------------------------------------
@@ -147,4 +281,57 @@ FileHeader::Print()
         printf("\n"); 
     }
     delete [] data;
+}
+
+void FileHeader::setNumBytes(int newBytes){
+	numBytes= newBytes;
+}
+
+bool FileHeader::ExtendFile( int sectorsToAllocate){
+    DEBUG('f',"Extending file by %d sectors\n",sectorsToAllocate);
+    sectorsToAllocate -= numSectors;
+	if (sectorsToAllocate <= 0)
+		return false;
+		
+	DEBUG('f', "opening free \n");
+	OpenFile* freeMapFile = new OpenFile(FreeMapSector);
+    BitMap* freeMap = new BitMap(NumSectors);
+    DEBUG('f', "Fetching free Map\n");
+    freeMap->FetchFrom(freeMapFile);
+    
+    if (freeMap->NumClear() < sectorsToAllocate)
+        return false;
+
+	int i = numSectors;	
+	while(sectorsToAllocate > 0){
+	    if (i < NumDirect){
+	      dataSectors[i] = freeMap->Find();
+	      DEBUG('f', "\nAllocating new direct DataSector[%d]:%d\n" , (i),dataSectors[i]);
+	      
+	      sectorsToAllocate--;
+	      numSectors++;
+	    }
+	    else{
+	      indirectPointers[i-NumDirect] = new IndirectPointerBlock();
+	      DEBUG('f', "\nAllocating new indirectPointerBlock[%d]:" , (i-NumDirect));
+	      int sectorsToAddToThisPage = sectorsToAllocate;
+	      if (sectorsToAddToThisPage > MaxIndirectPointers)
+		    sectorsToAddToThisPage = MaxIndirectPointers;
+	      for (int j = 0 ; j < sectorsToAddToThisPage; j++){
+	      
+		    DEBUG('f', "." );
+		    //DEBUG('f', "Putting a sector to indirectPointer[%d].\n" , (i-NumDirect));
+		    int newSec = freeMap->Find();
+		    indirectPointers[i-NumDirect]->PutSector(newSec);
+		    sectorsToAllocate--;
+		    numSectors++;
+	      }
+	    }
+      
+	}   
+	
+	freeMap->WriteBack(freeMapFile);
+	delete freeMap;
+	delete freeMapFile;
+    return true;
 }
