@@ -10,6 +10,7 @@
 #define PCB_H_
 
 #include "useropenfile.h"
+#include "syscall.h"
 
 #define MAX_FILES 30
 
@@ -29,6 +30,7 @@ public:
 	UserOpenFile *fileArray[MAX_FILES]; 
 	UserOpenFile* getFile(int id);
 	PCB();
+	PCB(SpaceId currPid, SpaceId currParentPid, Thread* currThread, int currStatus);
 	~PCB();
 	int Add(UserOpenFile *file);
 	bool Remove(int fileId);

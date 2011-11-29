@@ -49,7 +49,7 @@
 //	"which" is the kind of exception.  The list of possible exceptions 
 //	are in machine.h.
 //----------------------------------------------------------------------
-void PageFaultException(int);
+void PageFaultHandler(int);
 void myFork(int);
 void myYield();
 SpaceId myExec(char *);
@@ -199,7 +199,7 @@ ExceptionHandler(ExceptionType which)
 		incrRegs();		
     }else if(which == PageFaultException)
     {
-	PageFaultHandler(machine->ReadRegister(BadVaddrReg));
+	PageFaultHandler(machine->ReadRegister(BadVAddrReg));
     }
     else {
 	printf("Unexpected user mode exception %d %d\n", which, type);

@@ -67,7 +67,8 @@ AddrSpace::AddrSpace(OpenFile *executable)
     int read;
  
     pcb = new PCB(procManager->getPID(), -1, NULL, -1); // not even sure if pcb has this constr
-    procManager->AddProcess(pcb);
+ 
+    procManager->insertProcess(pcb, pcb->pid);
 
     executable->ReadAt((char *)&noffH, sizeof(noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) && (WordToHost(noffH.noffMagic) == NOFFMAGIC))
@@ -90,7 +91,7 @@ AddrSpace::AddrSpace(OpenFile *executable)
 	if(numPages > memManager->getAvailable())
         {
 	    printf("Not enough memory\n");
-	    procManager->clearPID(pcb->getPID()); // clearPID() ??
+	    procManager->clearPID(pcb->pid); // clearPID() ??
             numPages = -1;
 	    return;
 	} // ^^^ is this a good error catcher ^^^
@@ -159,8 +160,8 @@ AddrSpace::AddrSpace(TranslationEntry* table, int page_count, int oldPID)
     pageTable = table;
     numPages = page_count;
 
-    pcb = new PCB(pm->GetPID(), -1, NULL, -1);
-    pm->AddProcess(pcb);
+    pcb = new PCB(procManager->getPID(), -1, NULL, -1);
+    procManager->insertProcess(pcb, pcb->pid);
 
     #ifdef VM
     for (int i = 0; i < numPages; i++) 
@@ -192,7 +193,7 @@ AddrSpace::~AddrSpace() {
     for (i = 0; i < numPages; i++) 
     {
         if (pageTable[i].valid) 
-            memory->clearPage(pageTable[i].physicalPage);
+            memManager->clearPage(pageTable[i].physicalPage);
     }
 
     delete pageTable;
@@ -201,7 +202,7 @@ AddrSpace::~AddrSpace() {
 AddrSpace::~AddrSpace() 
 {
     for (int i = 0; i < numPages; i++) 
-       memory->clearPage(pageTable[i].physicalPage);
+       memManager->clearPage(pageTable[i].physicalPage);
 
     delete pageTable;
 }
