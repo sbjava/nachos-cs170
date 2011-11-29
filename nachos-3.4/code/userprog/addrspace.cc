@@ -64,8 +64,10 @@ AddrSpace::AddrSpace(OpenFile *executable)
 {
     NoffHeader noffH;
     unsigned int i, size;
-
-	int read;
+    int read;
+ 
+    pcb = new PCB(procManager->getPID(), -1, NULL, -1); // not even sure if pcb has this constr
+    procManager->AddProcess(pcb);
 
     executable->ReadAt((char *)&noffH, sizeof(noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) && (WordToHost(noffH.noffMagic) == NOFFMAGIC))
@@ -80,23 +82,35 @@ AddrSpace::AddrSpace(OpenFile *executable)
     numPages = divRoundUp(size, PageSize);
     size = numPages * PageSize;
 
+    #ifndef VM
    	ASSERT(numPages <= NumPhysPages);		// check we're not trying
 						// to run anything too big --
 						// at least until we have
 						// virtual memory
-	/*if(numPages > memManager->getAvailable()){
-		printf("Not enough memory\n");
-		numPages = -1;
-		return;
-	}*/
-	
+	if(numPages > memManager->getAvailable())
+        {
+	    printf("Not enough memory\n");
+	    procManager->clearPID(pcb->getPID()); // clearPID() ??
+            numPages = -1;
+	    return;
+	} // ^^^ is this a good error catcher ^^^
+    #endif
+
    DEBUG('a', "Initializing address space, num pages %d, size %d\n", numPages, size);
 // first, set up the translation 
     pageTable = new TranslationEntry[numPages];
-    for (i = 0; i < numPages; i++) {
+    for (i = 0; i < numPages; i++) 
+    {
 	pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
-	pageTable[i].physicalPage = memManager->getPage();  // memManager defined in system.cc
+	
+        #ifdef VM // initialize process with no pages in memory
+        pageTable[i].physicalPage = -1;
+        pageTable[i].valid = FALSE;
+        #else
+        pageTable[i].physicalPage = memManager->getPage();  // memManager defined in system.cc
 	pageTable[i].valid = TRUE;
+        #endif
+
 	pageTable[i].use = FALSE;
 	pageTable[i].dirty = FALSE;
 	pageTable[i].readOnly = FALSE;  // if the code segment was entirely on 
@@ -106,7 +120,7 @@ AddrSpace::AddrSpace(OpenFile *executable)
     
 // zero out the entire address space, to zero the unitialized data segment 
 // and the stack segment
-    bzero(machine->mainMemory, size);
+//    bzero(machine->mainMemory, size); // needed or not??
 
 // then, copy in the code and data segments into memory
     if (noffH.code.size > 0) {
@@ -120,22 +134,79 @@ AddrSpace::AddrSpace(OpenFile *executable)
 		read = ReadFile(noffH.initData.virtualAddr,executable,noffH.initData.size,noffH.initData.inFileAddr);
     }
 
+    #ifdef VM
+    char* buffer = new char[PageSize + 1];
+    memset(buffer, '\0', PageSize);
+    
+    
+    int page = ceil((float)(noffH.code.size + noffH.initData.size)/PageSize);
+    DEBUG('q', "######################Adding %d pages\n",(numPages - page));
+    
+    for (int v = page; v < numPages; v++)
+        vm->AddPage(&pageTable[v], pcb->GetPID(), PageSize);
+
+    delete buffer;
+    #endif
+
 	printf("Loaded Program: %d code | %d data | %d bss\n",noffH.code.size,noffH.initData.size,noffH.uninitData.size);
 }
 
 AddrSpace::AddrSpace() {
 }
 
+AddrSpace::AddrSpace(TranslationEntry* table, int page_count, int oldPID) 
+{
+    pageTable = table;
+    numPages = page_count;
+
+    pcb = new PCB(pm->GetPID(), -1, NULL, -1);
+    pm->AddProcess(pcb);
+
+    #ifdef VM
+    for (int i = 0; i < numPages; i++) 
+    {
+        if (pageTable[i].valid)
+           vm->AddPage(&pageTable[i], pcb->GetPID(), machine->mainMemory + (pageTable[i].physicalPage * PageSize), PageSize);
+        else
+            vm->CopyPage(&pageTable[i], oldPID, pcb->GetPID());
+       pageTable[i].valid = FALSE;
+       pageTable[i].physicalPage = -1;
+    }
+    #endif
+}
+
 //----------------------------------------------------------------------
 // AddrSpace::~AddrSpace
 // 	Dealloate an address space.  Nothing for now!
 //----------------------------------------------------------------------
+//AddrSpace::~AddrSpace()
+//{
+//   delete pageTable;
+//   delete pcb;
+//}
+#ifdef VM
+AddrSpace::~AddrSpace() {
+    int i;
 
-AddrSpace::~AddrSpace()
-{
-   delete pageTable;
-   delete pcb;
+    // Delete any pages in physical memory
+    for (i = 0; i < numPages; i++) 
+    {
+        if (pageTable[i].valid) 
+            memory->clearPage(pageTable[i].physicalPage);
+    }
+
+    delete pageTable;
 }
+#else
+AddrSpace::~AddrSpace() 
+{
+    for (int i = 0; i < numPages; i++) 
+       memory->clearPage(pageTable[i].physicalPage);
+
+    delete pageTable;
+}
+#endif
+
 
 //----------------------------------------------------------------------
 // AddrSpace::InitRegisters
@@ -222,13 +293,71 @@ AddrSpace::Translate(int vAddr, int *physAddr)
     int vpn = vAddr / PageSize; // PageSize defined in machine.h
     if(vpn > numPages) // > or >= ???
         return false;
+    else if(!pageTable[vpn].valid)
+    {
+	#ifdef VM
+ 	PageFaultHandler(vAddr);
+	#else
+        return false;
+	#endif
+    }
 
     int offset = vAddr % PageSize;
 
     *physAddr = pageTable[vpn].physicalPage * PageSize + offset;  // should it be ".physicalPage" ???
+    /*
+    if(writing)
+       	pageTable[vpn].dirty = TRUE;	
+    */ 
+    // ^^^ add this?? ^^^
+
+   #ifdef VM
+   pageTable[vpn].use = TRUE;
+   #endif
+
     return true;
 }
 
+
+#ifdef VM
+// Return Value ??? some int
+// vaddr = virtual address
+// file = file to read into memory
+// size = size of data to read
+// fileAddr = location in file to start at
+int AddrSpace::ReadFile(int vaddr, OpenFile* file, int size, int fileAddr) {
+   int bytes_read = 0;
+   int bytes_wrote;
+   int phys_addr;
+   int write_size;
+   char* mem_buffer;
+   char* buffer = new char[PageSize];
+   
+   char* out_buffer;
+   
+   DEBUG('q', "--------------------Start vaddr: %d end vaddr: %d\n", vaddr, vaddr + size);
+               
+   while (bytes_read < size) {
+       int read = file->ReadAt(diskBuffer, PageSize - (vaddr % PageSize), fileAddr);
+       fileAddr += read;
+       DEBUG('q', "Bytes read: %d\n", read);
+       bytes_read += read;
+       DEBUG('q', "We have vaddr: %d, and PageSize: %d, VPN: %d\n", vaddr, PageSize, vaddr/PageSize);
+       out_buffer = diskBuffer;
+   
+       if (vm->GetPage(&pageTable[vaddr/PageSize], pcb->GetPID(), buffer, PageSize)) {
+           DEBUG('7', "Starting at %d, we should be able to write %d bytes\n", vaddr, PageSize - (vaddr % PageSize));
+           memcpy(buffer + (vaddr % PageSize), diskBuffer, PageSize - (vaddr % PageSize));
+           out_buffer = buffer;
+       }
+
+       vm->AddPage(&pageTable[vaddr/PageSize], pcb->GetPID(), out_buffer, PageSize);
+       vaddr += read;
+   }
+   
+   delete buffer;
+}
+#else
 //---------------------------------------------------------------------
 // AddrSpace::ReadFile()
 //      loads the code and data segments into the translated memory
@@ -285,6 +414,8 @@ AddrSpace::ReadFile(int virtAddr, OpenFile* file, int size, int fileAddr)
     
     return actualSize;                
 }
+#endif
+
 
 //Function to make a copy of an address space
 AddrSpace*

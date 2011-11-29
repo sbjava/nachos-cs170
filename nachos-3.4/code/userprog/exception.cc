@@ -49,6 +49,7 @@
 //	"which" is the kind of exception.  The list of possible exceptions 
 //	are in machine.h.
 //----------------------------------------------------------------------
+void PageFaultException(int);
 void myFork(int);
 void myYield();
 SpaceId myExec(char *);
@@ -196,11 +197,29 @@ ExceptionHandler(ExceptionType which)
 			}
 		}	
 		incrRegs();		
-    } else {
+    }else if(which == PageFaultException)
+    {
+	PageFaultHandler(machine->ReadRegister(BadVaddrReg));
+    }
+    else {
 	printf("Unexpected user mode exception %d %d\n", which, type);
 	ASSERT(FALSE);
     }
 }
+
+/////////////////////////////////
+// PageFaultExceptionHandler
+////////////////////////////////
+extern void PageFaultHandler(int vaddr) 
+{
+    int vpn = vaddr / PageSize;
+    DEBUG('q',"======================Page fault at page %d=======================\n",vpn);
+    #ifdef VM
+    vm->Swap(vpn, currentThread->space->pcb->GetPID());
+    #endif
+
+}
+
 
 /////////////////////////////////
 // Dummy function used by myFork
