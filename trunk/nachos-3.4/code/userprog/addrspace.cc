@@ -19,9 +19,16 @@
 #include "system.h"
 #include "addrspace.h"
 #include "noff.h"
+
+#ifdef VM
+#include <cmath>
+#endif
+
 #ifdef HOST_SPARC
 #include <strings.h>
 #endif
+
+extern void PageFaultHandler(int vaddr);
 
 //----------------------------------------------------------------------
 // SwapHeader
@@ -136,6 +143,7 @@ AddrSpace::AddrSpace(OpenFile *executable)
     }
 
     #ifdef VM
+	
     char* buffer = new char[PageSize + 1];
     memset(buffer, '\0', PageSize);
     
@@ -144,7 +152,8 @@ AddrSpace::AddrSpace(OpenFile *executable)
     DEBUG('q', "######################Adding %d pages\n",(numPages - page));
     
     for (int v = page; v < numPages; v++)
-        vm->AddPage(&pageTable[v], pcb->GetPID(), PageSize);
+        vm->AddPage(&pageTable[v], pcb->pid, PageSize);
+		//vm->
 
     delete buffer;
     #endif
@@ -167,9 +176,9 @@ AddrSpace::AddrSpace(TranslationEntry* table, int page_count, int oldPID)
     for (int i = 0; i < numPages; i++) 
     {
         if (pageTable[i].valid)
-           vm->AddPage(&pageTable[i], pcb->GetPID(), machine->mainMemory + (pageTable[i].physicalPage * PageSize), PageSize);
+           vm->AddPage(&pageTable[i], pcb->pid, machine->mainMemory + (pageTable[i].physicalPage * PageSize), PageSize);
         else
-            vm->CopyPage(&pageTable[i], oldPID, pcb->GetPID());
+            vm->CopyPage(&pageTable[i], oldPID, pcb->pid);
        pageTable[i].valid = FALSE;
        pageTable[i].physicalPage = -1;
     }
@@ -346,13 +355,13 @@ int AddrSpace::ReadFile(int vaddr, OpenFile* file, int size, int fileAddr) {
        DEBUG('q', "We have vaddr: %d, and PageSize: %d, VPN: %d\n", vaddr, PageSize, vaddr/PageSize);
        out_buffer = diskBuffer;
    
-       if (vm->GetPage(&pageTable[vaddr/PageSize], pcb->GetPID(), buffer, PageSize)) {
+       if (vm->GetPage(&pageTable[vaddr/PageSize], pcb->pid, buffer, PageSize)) {
            DEBUG('7', "Starting at %d, we should be able to write %d bytes\n", vaddr, PageSize - (vaddr % PageSize));
            memcpy(buffer + (vaddr % PageSize), diskBuffer, PageSize - (vaddr % PageSize));
            out_buffer = buffer;
        }
 
-       vm->AddPage(&pageTable[vaddr/PageSize], pcb->GetPID(), out_buffer, PageSize);
+       vm->AddPage(&pageTable[vaddr/PageSize], pcb->pid, out_buffer, PageSize);
        vaddr += read;
    }
    
