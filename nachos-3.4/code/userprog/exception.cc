@@ -49,7 +49,7 @@
 //	"which" is the kind of exception.  The list of possible exceptions 
 //	are in machine.h.
 //----------------------------------------------------------------------
-void PageFaultHandler(int);
+extern void PageFaultHandler(int);
 void myFork(int);
 void myYield();
 SpaceId myExec(char *);
@@ -215,7 +215,7 @@ extern void PageFaultHandler(int vaddr)
     int vpn = vaddr / PageSize;
     DEBUG('q',"======================Page fault at page %d=======================\n",vpn);
     #ifdef VM
-    vm->Swap(vpn, currentThread->space->pcb->GetPID());
+    vm->Swap(vpn, currentThread->space->pcb->pid);
     #endif
 
 }

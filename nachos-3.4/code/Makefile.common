@@ -48,7 +48,7 @@ THREAD_H =../threads/copyright.h\
 	../machine/interrupt.h\
 	../machine/sysdep.h\
 	../machine/stats.h\
-	../machine/timer.h
+	../machine/timer.h		
 
 THREAD_C =../threads/main.cc\
 	../threads/list.cc\
@@ -62,16 +62,19 @@ THREAD_C =../threads/main.cc\
 	../machine/interrupt.cc\
 	../machine/sysdep.cc\
 	../machine/stats.cc\
-	../machine/timer.cc
+	../machine/timer.cc	
 
 THREAD_S = ../threads/switch.s
 
 THREAD_O =main.o list.o scheduler.o synch.o synchlist.o system.o thread.o \
 	utility.o threadtest.o interrupt.o stats.o sysdep.o timer.o
-
+	
 USERPROG_H = ../userprog/addrspace.h\
 	../userprog/bitmap.h\
 	../vm/vmManager.h\
+	../vm/swapManager.h\
+	../vm/iReplacement.h\
+	../vm/lru.h\
 	../userprog/memorymanager.h\
 	../userprog/processmanager.h\
 	../userprog/pcb.h\
@@ -87,6 +90,8 @@ USERPROG_H = ../userprog/addrspace.h\
 USERPROG_C = ../userprog/addrspace.cc\
 	../userprog/bitmap.cc\
 	../vm/vmManager.cc\
+	../vm/swapManager.cc\
+	../vm/lru.cc\
 	../userprog/exception.cc\
 	../userprog/progtest.cc\
 	../userprog/memorymanager.cc\
@@ -100,7 +105,8 @@ USERPROG_C = ../userprog/addrspace.cc\
 	../machine/translate.cc
 
 USERPROG_O =addrspace.o bitmap.o exception.o progtest.o console.o machine.o vmManager.o\
-	mipssim.o translate.o memorymanager.o processmanager.o pcb.o sysopenfile.o useropenfile.o
+	mipssim.o translate.o memorymanager.o processmanager.o pcb.o sysopenfile.o useropenfile.o\
+	swapManager.o lru.o
 
 VM_H = 
 VM_C = 
