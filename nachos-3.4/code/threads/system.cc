@@ -34,6 +34,7 @@ Machine *machine;	// user program memory and registers
 
 MemoryManager *memManager;
 ProcessManager *procManager;
+VMManager *vm;
 SysOpenFile *openFilesArray[MAX_FILES];
 char diskBuffer[PageSize];
 
@@ -195,6 +196,7 @@ Initialize(int argc, char **argv)
     procManager = new ProcessManager();
     for(int i = 0; i < MAX_FILES; i++)
 		openFilesArray[i] = NULL;
+    vm = new VMManager();
 
 #endif
 #endif
@@ -230,6 +232,7 @@ Cleanup()
 #ifdef CHANGED
      delete memManager;
      delete procManager;
+     delete vm;
 
 #endif
 #endif

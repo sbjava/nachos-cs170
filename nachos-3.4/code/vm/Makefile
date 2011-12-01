@@ -35,7 +35,7 @@ main.o: ../threads/main.cc ../threads/copyright.h ../threads/utility.h \
  /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -57,7 +57,7 @@ list.o: ../threads/list.cc ../threads/copyright.h ../threads/list.h \
  ../threads/copyright.h /usr/include/stdio.h /usr/include/features.h \
  /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
  /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -69,7 +69,7 @@ scheduler.o: ../threads/scheduler.cc ../threads/copyright.h \
  /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -91,7 +91,7 @@ synch.o: ../threads/synch.cc ../threads/copyright.h ../threads/synch.h \
  /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -114,7 +114,7 @@ synchlist.o: ../threads/synchlist.cc ../threads/copyright.h \
  /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -129,7 +129,7 @@ system.o: ../threads/system.cc ../threads/copyright.h ../threads/system.h \
  ../threads/copyright.h /usr/include/stdio.h /usr/include/features.h \
  /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
  /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -151,7 +151,7 @@ thread.o: ../threads/thread.cc ../threads/copyright.h ../threads/thread.h \
  ../threads/copyright.h /usr/include/stdio.h /usr/include/features.h \
  /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
  /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -173,7 +173,7 @@ utility.o: ../threads/utility.cc ../threads/copyright.h \
  ../threads/copyright.h /usr/include/stdio.h /usr/include/features.h \
  /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
  /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -185,7 +185,7 @@ threadtest.o: ../threads/threadtest.cc ../threads/copyright.h \
  /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -209,7 +209,7 @@ interrupt.o: ../machine/interrupt.cc ../threads/copyright.h \
  /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -230,7 +230,7 @@ sysdep.o: ../machine/sysdep.cc ../threads/copyright.h \
  /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -280,7 +280,7 @@ stats.o: ../machine/stats.cc ../threads/copyright.h ../threads/utility.h \
  /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -291,7 +291,7 @@ timer.o: ../machine/timer.cc ../threads/copyright.h ../machine/timer.h \
  ../machine/sysdep.h /usr/include/stdio.h /usr/include/features.h \
  /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
  /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -314,7 +314,7 @@ addrspace.o: ../userprog/addrspace.cc ../threads/copyright.h \
  /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -332,24 +332,23 @@ addrspace.o: ../userprog/addrspace.cc ../threads/copyright.h \
  ../userprog/syscall.h ../machine/translate.h \
  ../threads/../vm/iReplacement.h ../threads/../vm/lru.h \
  ../userprog/addrspace.h ../bin/noff.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/../../../../include/c++/4.4.5/cmath \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/../../../../include/c++/4.4.5/i686-redhat-linux/bits/c++config.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/../../../../include/c++/4.4.5/i686-redhat-linux/bits/os_defines.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/../../../../include/c++/4.4.5/i686-redhat-linux/bits/cpu_defines.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/../../../../include/c++/4.4.5/bits/cpp_type_traits.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/../../../../include/c++/4.4.5/ext/type_traits.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/../../../../include/c++/4.6.1/cmath \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/../../../../include/c++/4.6.1/i686-redhat-linux/bits/c++config.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/../../../../include/c++/4.6.1/i686-redhat-linux/bits/os_defines.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/../../../../include/c++/4.6.1/i686-redhat-linux/bits/cpu_defines.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/../../../../include/c++/4.6.1/bits/cpp_type_traits.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/../../../../include/c++/4.6.1/ext/type_traits.h \
  /usr/include/math.h /usr/include/bits/huge_val.h \
  /usr/include/bits/huge_valf.h /usr/include/bits/huge_vall.h \
  /usr/include/bits/inf.h /usr/include/bits/nan.h \
- /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/../../../../include/c++/4.4.5/bits/cmath.tcc
+ /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
 bitmap.o: ../userprog/bitmap.cc ../threads/copyright.h \
  ../userprog/bitmap.h ../threads/utility.h ../threads/copyright.h \
  ../threads/bool.h ../machine/sysdep.h /usr/include/stdio.h \
  /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -361,7 +360,7 @@ vmManager.o: ../vm/vmManager.cc ../vm/vmManager.h ../vm/swapManager.h \
  /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -383,7 +382,7 @@ swapManager.o: ../vm/swapManager.cc ../vm/swapManager.h \
  /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -406,7 +405,7 @@ lru.o: ../vm/lru.cc ../vm/lru.h ../vm/iReplacement.h ../machine/machine.h \
  /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -429,7 +428,7 @@ exception.o: ../userprog/exception.cc ../threads/copyright.h \
  /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -452,7 +451,7 @@ progtest.o: ../userprog/progtest.cc ../threads/copyright.h \
  /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -476,7 +475,7 @@ memorymanager.o: ../userprog/memorymanager.cc ../userprog/memorymanager.h \
  /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -488,7 +487,7 @@ processmanager.o: ../userprog/processmanager.cc ../threads/system.h \
  /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -514,7 +513,7 @@ sysopenfile.o: ../userprog/sysopenfile.cc ../userprog/sysopenfile.h \
  ../machine/sysdep.h /usr/include/stdio.h /usr/include/features.h \
  /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
  /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -527,7 +526,7 @@ console.o: ../machine/console.cc ../threads/copyright.h \
  /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -550,7 +549,7 @@ machine.o: ../machine/machine.cc ../threads/copyright.h \
  /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -573,7 +572,7 @@ mipssim.o: ../machine/mipssim.cc ../threads/copyright.h \
  /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
@@ -596,7 +595,7 @@ translate.o: ../machine/translate.cc ../threads/copyright.h \
  /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-32.h \
- /usr/lib/gcc/i686-redhat-linux/4.4.5/include/stddef.h \
+ /usr/lib/gcc/i686-redhat-linux/4.6.1/include/stddef.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  ../threads/stdarg.h /usr/include/bits/stdio_lim.h \
