@@ -306,6 +306,7 @@ AddrSpace::Translate(int vAddr, int *physAddr)
     else if(!pageTable[vpn].valid)
     {
 	#ifdef VM
+	DEBUG('3', "**PageFaultHandler, vAddr: %i\n", vAddr);	
  	PageFaultHandler(vAddr);
 	#else
         return false;
@@ -354,7 +355,7 @@ int AddrSpace::ReadFile(int vaddr, OpenFile* file, int size, int fileAddr) {
        bytes_read += read;
        DEBUG('q', "We have vaddr: %d, and PageSize: %d, VPN: %d\n", vaddr, PageSize, vaddr/PageSize);
        out_buffer = diskBuffer;
-   
+   		
        if (vm->GetPage(&pageTable[vaddr/PageSize], pcb->pid, buffer, PageSize)) {
            DEBUG('7', "Starting at %d, we should be able to write %d bytes\n", vaddr, PageSize - (vaddr % PageSize));
            memcpy(buffer + (vaddr % PageSize), diskBuffer, PageSize - (vaddr % PageSize));

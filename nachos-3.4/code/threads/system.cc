@@ -34,8 +34,9 @@ Machine *machine;	// user program memory and registers
 
 MemoryManager *memManager;
 ProcessManager *procManager;
-VMManager *vm;
 SysOpenFile *openFilesArray[MAX_FILES];
+VMManager *vm;
+
 char diskBuffer[PageSize];
 
 

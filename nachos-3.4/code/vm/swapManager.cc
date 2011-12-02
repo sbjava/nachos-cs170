@@ -151,8 +151,9 @@ TranslationEntry* SwapManager::findPage(SpaceId pid, int vpn, char* buffer) {
 //      DEBUG('q'," line 100 SwapManager.cc ->Swap size =% d",SWAPSIZE);
         for (int i=0; i < SWAP_SIZE; i++) {
                 //DEBUG('q', "WHAT\n");
-                //bool b = (PIDs[i] == pid);
-                //DEBUG('q', "THE\n");
+                bool b = (PIDs[i] == pid);
+                if(b)
+					DEBUG('q', "**findPage bool b .. pid:  %i\n", pid);
                 //bool c = (entries[i]->virtualPage == vpn);
                 //DEBUG('q', "HELL\n");
                 //bool d = (bitmap->Test(i));
