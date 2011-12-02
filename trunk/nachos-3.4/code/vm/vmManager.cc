@@ -130,31 +130,35 @@ void VMManager::RemovePages(SpaceId pid) {
 }
 
 bool VMManager::GetPage(TranslationEntry* page, SpaceId pid, char* buffer, int size) {
-        if (swapMgr->findPage(pid, page->virtualPage, buffer) != NULL) {
+    DEBUG('3', "in getPage.. pid: %i\n", pid);
+	if (swapMgr->findPage(pid, page->virtualPage, buffer) != NULL) {
                 return true;
-        }
+    }
 
         return false;
 }
 
 void VMManager::CopyPage(TranslationEntry* page, SpaceId oldPID, SpaceId newPID) {
         char buffer[PageSize];
-
+		DEBUG('3', "in copy page.. old pid: %i     new pid: %i\n", oldPID, newPID);
         swapMgr->findPage(oldPID, page->virtualPage, buffer);
         swapMgr->addPage(page, newPID, buffer, PageSize);
 }
 
 void VMManager::Swap(int vpn, SpaceId pid) {
         int proc_kill;
-        TranslationEntry* page;
+        TranslationEntry* page = new TranslationEntry();
         // No swap necessary, we have enough memory available
         //if (memory->freePages() != 0) {
 		if(memManager->getAvailable() != 0){
                 int phys_page = memManager->getPage();
-                //DEBUG('q', "Swapping into main memory page %d\n", phys_page);
+                DEBUG('q', "Swapping into main memory page %d\n", phys_page);
                 char* paddr = machine->mainMemory + phys_page*PageSize;
                 page = swapMgr->findPage(pid, vpn, paddr);
-                page->physicalPage = phys_page;
+				DEBUG('q', "**In vm->swap: phys_page %i \n", phys_page);			
+				page->physicalPage = phys_page;
+				DEBUG('q', "**In vm->swap: vpn%i   pid%i\n", vpn, pid);
+				 
 
                 //lru->AddPage(page,pid);
 				policy->AddPage(page, pid);

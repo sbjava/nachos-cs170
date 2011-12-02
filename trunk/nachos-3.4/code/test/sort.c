@@ -14,12 +14,15 @@ int A[1024];	/* size of physical memory; with code, we'll run out of space!*/
 int
 main()
 {
+	//Write("Sort: test write\n", 253, ConsoleOutput);    
     int i, j, tmp;
+	Write("Sort: Writing from sort\n", 253, ConsoleOutput);    
 
     /* first initialize the array, in reverse sorted order */
     for (i = 0; i < 1024; i++)		
         A[i] = 1024 - i;
 
+	Write("Sort: test\n", 253, ConsoleOutput);    
     /* then sort! */
     for (i = 0; i < 1023; i++)
         for (j = i; j < (1023 - i); j++)

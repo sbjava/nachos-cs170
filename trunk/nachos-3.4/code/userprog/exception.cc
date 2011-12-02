@@ -199,7 +199,8 @@ ExceptionHandler(ExceptionType which)
 		incrRegs();		
     }else if(which == PageFaultException)
     {
-	PageFaultHandler(machine->ReadRegister(BadVAddrReg));
+		printf("**PageFaultException in exception.cc\n");
+		PageFaultHandler(machine->ReadRegister(BadVAddrReg));
     }
     else {
 	printf("Unexpected user mode exception %d %d\n", which, type);

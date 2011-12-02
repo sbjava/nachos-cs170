@@ -39,7 +39,7 @@ class TranslationEntry {
     bool use;           // This bit is set by the hardware every time the
 			// page is referenced or modified.
     bool dirty;         // This bit is set by the hardware every time the
-			// page is modified.
+			// page is modified.		
 };
 
 #endif
