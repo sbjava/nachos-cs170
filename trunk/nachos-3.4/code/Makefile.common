@@ -79,7 +79,6 @@ USERPROG_H = ../userprog/addrspace.h\
 	../userprog/processmanager.h\
 	../userprog/pcb.h\
 	../userprog/sysopenfile.h\
-	../userprog/sysOpenFileManager.h\
 	../userprog/useropenfile.h\
 	../filesys/filesys.h\
 	../filesys/openfile.h\
@@ -99,7 +98,6 @@ USERPROG_C = ../userprog/addrspace.cc\
 	../userprog/processmanager.cc\
 	../userprog/pcb.cc\
 	../userprog/sysopenfile.cc\
-	../userprog/sysOpenFileManager.cc\
 	../userprog/useropenfile.cc\
 	../machine/console.cc\
 	../machine/machine.cc\
@@ -107,7 +105,7 @@ USERPROG_C = ../userprog/addrspace.cc\
 	../machine/translate.cc
 
 USERPROG_O =addrspace.o bitmap.o exception.o progtest.o console.o machine.o vmManager.o\
-	mipssim.o translate.o memorymanager.o processmanager.o pcb.o sysopenfile.o sysOpenFileManager.o useropenfile.o\
+	mipssim.o translate.o memorymanager.o processmanager.o pcb.o sysopenfile.o useropenfile.o\
 	swapManager.o lru.o
 
 VM_H = 
