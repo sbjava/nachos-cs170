@@ -217,7 +217,7 @@ extern void PageFaultHandler(int vaddr)
     int page = vaddr / PageSize;
     DEBUG('q',"Page fault at page %d\n",page);
     #ifdef VM
-    vm->Swap(vpn, currentThread->space->pcb->pid);
+    vm->Swap(page, currentThread->space->pcb->pid);
     #endif
 
 }
@@ -470,9 +470,10 @@ int myRead(int bufferAddress, int size, OpenFileId id){
 			return -1;
 			// error
 		}
+		SysOpenFile *sFile;	
 			
-		if(openFileManager->Get(ufile->indexPosition)->fileID == id)	
-			SysOpenFile *sFile = openFileManager->Get(uFile->indexPosition);	
+		if(openFileManager->Get(userFile->indexPosition)->fileID == id)	
+			sFile = openFileManager->Get(userFile->indexPosition);	
 		else
 			return -1;
 	
@@ -529,9 +530,9 @@ void myWrite(int bufferAddress, int size, OpenFileId id){
 			return;
 			
 		if(openFileManager->Get(uFile->indexPosition)->fileID == id)	
-			SysOpenFile *sFile = fm->Get(uFile->indexPosition);
+			SysOpenFile *sFile = openFileManager->Get(uFile->indexPosition);
 		else
-			return -1;
+			return;
 		
 		/*if(openFilesArray[uFile->indexPosition] != NULL)
 			sFile = openFilesArray[uFile->indexPosition];*/
@@ -557,10 +558,11 @@ void myClose(OpenFileId id){
 	if(userFile == NULL){
 		return ;
 	}
-	int tmpIndex = userFile->indexPosition;
+	//int tmpIndex = userFile->indexPosition;
 
-	if(openFileManager->Get(uFile->indexPosition)->fileID == id)	
-		SysOpenFile *sFile = openFileManager->Get(uFile->indexPosition);
+	SysOpenFile *sFile;
+	if(openFileManager->Get(userFile->indexPosition)->fileID == id)	
+		sFile = openFileManager->Get(userFile->indexPosition);
 	else
 		return;
 		
@@ -571,7 +573,7 @@ void myClose(OpenFileId id){
 		sFile = openFilesArray[tmpIndex];*/	
 	
 	//sFile->closeOne();
-	currentThread->space->pcb->Remove(id);
+	currentThread->space->pcb->Remove(userFile);
 	//delete openFilesArray[tmpIndex];
 	//openFilesArray[tmpIndex] = NULL;
 }

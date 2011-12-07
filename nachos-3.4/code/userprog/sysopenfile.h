@@ -32,9 +32,9 @@ class SysOpenFileManager {
 		SysOpenFileManager();
 		~SysOpenFileManager();
 
-		int add(SysOpenFile* newSysOpenFile);
-		SysOpenFile* get(char* fileName, int& index);
-		SysOpenFile* get(int index);
+		int Add(SysOpenFile* newSysOpenFile);
+		SysOpenFile* Get(char* fileName, int& index);
+		SysOpenFile* Get(int index);
 
 		Lock* lock;
 

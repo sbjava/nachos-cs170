@@ -46,11 +46,8 @@ class AddrSpace {
     int ReadFile(int virtAddr, OpenFile* file, int size, int fileAddr);
 
 	int getNumPages();
-	#ifdef VM
-	AddrSpace* Duplicate(AddrSpace** copySpace);
-	#else
+
 	AddrSpace* Duplicate();
-	#endif
 	
 	void CleanupSysCall();
 	
