@@ -14,7 +14,7 @@ public:
     char * fileName;    // file name and the number of user processes accessing
     int fileID;
     int numUsersAccess;	// Number of user processes accessing
-
+	akajsdkl = 0;
 
 	//@@@ BitMap usedFiles;
 	
