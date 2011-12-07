@@ -383,9 +383,11 @@ OpenFileId myOpen(char *name){
 	printf("System Call: %d invoked Open\n", currentThread->space->pcb->pid);
 	
 	int index = 0;	
-	SysOpenFile *sFile= NULL;
+	SysOpenFile *sFile = openFileManager->Get(name, index);
 	//printf("open sys call\n");
-	for(int i = 2; i < MAX_FILES; i++){
+	
+	//@@@
+	/*for(int i = 2; i < MAX_FILES; i++){
 		//printf("opening at %i\n", i);
 		//checking to see if file already open
 		if(openFilesArray[i] != NULL && strcmp(openFilesArray[i]->fileName, name)==0){
@@ -393,21 +395,24 @@ OpenFileId myOpen(char *name){
 			sFile = openFilesArray[i];
 			index = i;
 		}		
-	}
+	}*/
 	
 	if (sFile == NULL) {
 		//printf("open3 at\n");
 		OpenFile *oFile = fileSystem->Open(name);
+		sFile = new SysOpenFile(name, oFile, -1);
+		index = openFileManager->Add(sFile);
 		//printf("open4 at\n");
-				
+		/*		
 		if (oFile == NULL) {
 			// Here if file is unable to be opened
 			//printf("ofile is %p\n", oFile);
 			return -1;
 		}
 		//printf("open5 at\n");
+		*/
 		
-		SysOpenFile *sysFile = new SysOpenFile();
+		/*SysOpenFile *sysFile = new SysOpenFile();
 		sysFile->file = oFile;
 		sysFile->numUsersAccess = 1;
 		sysFile->fileName = CloneString(name);
@@ -425,9 +430,7 @@ OpenFileId myOpen(char *name){
 				index = i;
 				break;
 			}
-		}
-		
-		//index = fileManager->Add(sysFile);
+		}*/		
 	}
 	else{
 		sFile->numUsersAccess++;
@@ -436,7 +439,7 @@ OpenFileId myOpen(char *name){
 	UserOpenFile *uFile = new UserOpenFile();
 	uFile->indexPosition = index;
 	uFile->offset = 0;
-	//uFile->fileName = CloneString(name);
+	uFile->fileName = CloneString(name);
 	//printf("open9 at: %s\n", uFile->fileName);	
 	OpenFileId oFileId = currentThread->space->pcb->Add(uFile);
 	//printf("open10 at: %i\n", oFileId);	
@@ -458,25 +461,39 @@ int myRead(int bufferAddress, int size, OpenFileId id){
 			buffer[count]=getchar();
 			count++;
 		}
+		
+		
 	} 
-	else {
+	else {		
 		UserOpenFile* userFile =  currentThread->space->pcb->getFile(id);
-		if(userFile == NULL)
-			return 0;
+		if(userFile == NULL){
+			return -1;
+			// error
+		}
 			
-		//SysOpenFile *sysFile = fileManager->getFile(userFile->fileIndex);	
-		SysOpenFile *sFile= NULL;		
+		if(openFileManager->Get(ufile->indexPosition)->fileID == id)	
+			SysOpenFile *sFile = openFileManager->Get(uFile->indexPosition);	
+		else
+			return -1;
+	
+		if(sFile == NULL) {
+			return -1;
+			//error
+		}
 		//new fileManager = openFilesArray
-		if(openFilesArray[userFile->indexPosition] != NULL)
-			sFile = openFilesArray[userFile->indexPosition];
+		/*if(openFilesArray[userFile->indexPosition] != NULL)
+			sFile = openFilesArray[userFile->indexPosition];*/
 		
 		//printf("reading sFile->file: %d\n", sFile->file);
 		//printf("reading offset: %d\n",userFile->offset);
 		//printf("reading buffer: %p\n",buffer);
-		//printf("reading size: %d\n",size);			
+		//printf("reading size: %d\n",size);
+		sFile->lock->Acquire();					
 		sizeCopy = sFile->file->ReadAt(buffer,size,userFile->offset);
+		sFile->lock->Release();					
 		//printf("reading is now here\n");
 		userFile->offset+=sizeCopy;
+		//@@@ need buffer[sizeCopy] = '/0' ????
 	}
 	//---------Need a read write func----------
 	//int ReadWrite(int virAddr, OpenFile *file, int size, int fileAddr, int type)	
@@ -494,9 +511,8 @@ void myWrite(int bufferAddress, int size, OpenFileId id){
 	printf("System Call: %d invoked Write\n", currentThread->space->pcb->pid);
 	char* buffer = new char[size+1];
 	
-	//-----------Need this func------------------
 	ReadWrite(bufferAddress,buffer,size,USER_WRITE);
-	//-------------------------------------------
+
 	
 	
 	if (id == ConsoleOutput) {
@@ -510,11 +526,20 @@ void myWrite(int bufferAddress, int size, OpenFileId id){
 		int writeSize = ReadWrite(bufferAddress,buffer,size,USER_WRITE);
 		UserOpenFile* uFile =  currentThread->space->pcb->getFile(id);
 		if(uFile == NULL)
-			return ;
+			return;
 			
-		SysOpenFile *sFile = NULL;
-		if(openFilesArray[uFile->indexPosition] != NULL)
-			sFile = openFilesArray[uFile->indexPosition];
+		if(openFileManager->Get(uFile->indexPosition)->fileID == id)	
+			SysOpenFile *sFile = fm->Get(uFile->indexPosition);
+		else
+			return -1;
+		
+		/*if(openFilesArray[uFile->indexPosition] != NULL)
+			sFile = openFilesArray[uFile->indexPosition];*/
+			
+		if(sFile == NULL){
+			return;
+			//error
+		}	
 			
 		int bytes = sFile->file->WriteAt(buffer,size,uFile->offset);
 		uFile->offset+=bytes;
@@ -533,14 +558,21 @@ void myClose(OpenFileId id){
 		return ;
 	}
 	int tmpIndex = userFile->indexPosition;
+
+	if(openFileManager->Get(uFile->indexPosition)->fileID == id)	
+		SysOpenFile *sFile = openFileManager->Get(uFile->indexPosition);
+	else
+		return;
+		
+	if(sFile == NULL){
+		return;
+	}
+	/*if(openFilesArray[userFile->indexPosition] != NULL)
+		sFile = openFilesArray[tmpIndex];*/	
 	
-	SysOpenFile *sFile = NULL;	
-	if(openFilesArray[userFile->indexPosition] != NULL)
-		sFile = openFilesArray[tmpIndex];
-	
-	sFile->closeOne();
+	//sFile->closeOne();
 	currentThread->space->pcb->Remove(id);
-	delete openFilesArray[tmpIndex];
-	openFilesArray[tmpIndex] = NULL;
+	//delete openFilesArray[tmpIndex];
+	//openFilesArray[tmpIndex] = NULL;
 }
 
