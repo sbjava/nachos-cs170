@@ -434,7 +434,7 @@ AddrSpace::ReadFile(int virtAddr, OpenFile* file, int size, int fileAddr)
 
 #ifdef VM
 //@@@ don't know if this for sure does the same thing???
-AddrSpace* AddrSpace::Duplicate(AddrSpace** copySpace) 
+AddrSpace* AddrSpace::Duplicate() 
 {
 	AddrSpace* dup = new AddrSpace();
 	dup->numPages = this->numPages;
@@ -455,8 +455,10 @@ AddrSpace* AddrSpace::Duplicate(AddrSpace** copySpace)
 //Function to make a copy of an address space
 AddrSpace*
 AddrSpace::Duplicate(){
-	if(numPages > memManager->getAvailable())
+	if(numPages > memManager->getAvailable()){
+		*copySpace = NULL;
 		return NULL;
+	}
 
 	AddrSpace* dup = new AddrSpace();
 	dup->numPages = this->numPages;
