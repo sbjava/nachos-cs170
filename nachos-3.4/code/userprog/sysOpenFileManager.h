@@ -1,7 +1,12 @@
+#ifdef SYSOPENFILEMANAGER_H
+#define SYSOPENFILEMANAGER_H
+
 #include "bitmap.h"
 #include "sysopenfile.h"
 #include "synch.h"
 //class Lock;
+
+
 
 class SysOpenFileManager {
 	public:
@@ -20,3 +25,5 @@ class SysOpenFileManager {
 		SysOpenFile* openFileTable[SOFILETABLE_SIZE];
 		BitMap* openFiles;
 };
+
+#endif
