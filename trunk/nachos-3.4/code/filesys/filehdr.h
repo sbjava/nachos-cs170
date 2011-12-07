@@ -76,10 +76,10 @@ class FileHeader {
 
     void Print();			// Print the contents of the file.
     
-    //@@@bool ExtendFile( int sectors); //extend the file by N sectors
-	#ifdef FILESYS
+    bool ExtendFile( int sectors); //extend the file by N sectors
+	/*#ifdef FILESYS
 	bool ExtendFile(BitMap *bm, int n, int bytes);
-	#endif
+	#endif*/
 
     void setNumBytes(int newBytes);
 
