@@ -15,7 +15,7 @@
 //      Initialize a process manager with a bitmap of size "MAX_PROCESS" 
 //      bits and create the PCBs array
 //----------------------------------------------------------------------
-ProcessManager::ProcessManager():processes(MAX_PROCESSES)
+ProcessManager::ProcessManager()
 {
     pcbs = new PCB*[MAX_PROCESSES];
     conditions = new Condition*[MAX_PROCESSES];
@@ -23,7 +23,7 @@ ProcessManager::ProcessManager():processes(MAX_PROCESSES)
 	processes = new BitMap(MAX_PROCESSES);
 
 	//@@@ lock
-	pmLock = new Lock("pm lock")
+	pmLock = new Lock("pm lock");
 }
 
 
@@ -39,7 +39,7 @@ ProcessManager::~ProcessManager()
 void ProcessManager::insertProcess(PCB *pcb, int pid){
 	//@@@
 	pmLock->Acquire();
-	if(pcb == null)
+	if(pcb == NULL)
 		return;
 	
 	pcbs[pid] = pcb;
@@ -54,7 +54,7 @@ void ProcessManager::insertProcess(PCB *pcb, int pid){
 int ProcessManager::getPID()
 {
     // Find()- first clear bit in bitmap
-    return processes.Find();
+    return processes->Find();
 }
 
 void ProcessManager::clearPID(int pid)
@@ -82,7 +82,7 @@ void ProcessManager::clearPID(int pid)
 	delete locks[pid];
 	locks[pid] = NULL;
 	
-    processes.Clear(pid);
+    processes->Clear(pid);
 
 	//@@@
 	pmLock->Release();
@@ -111,7 +111,7 @@ ProcessManager::join(int pid)
 		
 	while(1) {
 		pmLock->Acquire();
-		if(pcbs[pid]->getStatus() > 1){
+		if(pcbs[pid]->status > 1){
 			locks[pid]->Release();
 			pmLock->Release();
 			return;
@@ -149,7 +149,7 @@ int ProcessManager::getJoins(int pid) {
 	
 	if(pid > MAX_PROCESSES){
 		pmLock->Release();
-		return;
+		return -1;
 	}
 	
 	if(processes->Test(pid)){
@@ -193,12 +193,12 @@ int ProcessManager::getStatus(int pid)
 	
 	if(pid > MAX_PROCESSES){
 		pmLock->Release();
-		return;
+		return -1;
 	}
 	
 	if(!processes->Test(pid)){
 		pmLock->Release();
-		return;
+		return -1;
 	}
 
 	pmLock->Release();
@@ -207,7 +207,7 @@ int ProcessManager::getStatus(int pid)
     	return -1;
     return pcbStatus[pid];*/
 
-	return pcbs[pid]->getStatus();
+	return pcbs[pid]->status;
 
 }
 
