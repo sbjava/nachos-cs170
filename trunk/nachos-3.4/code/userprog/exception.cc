@@ -200,7 +200,7 @@ ExceptionHandler(ExceptionType which)
 		incrRegs();		
     }else if(which == PageFaultException)
     {
-		printf("**PageFaultException in exception.cc\n");
+		//printf("**PageFaultException in exception.cc\n");
 		PageFaultHandler(machine->ReadRegister(BadVAddrReg));
     }
     else {
