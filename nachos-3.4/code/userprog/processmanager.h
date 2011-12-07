@@ -36,7 +36,7 @@ public:
 	
 
 private:
-	BitMap processes; 	// a BitMap for process manager methods
+	BitMap *processes; 	// a BitMap for process manager methods
 	PCB** pcbs;		// an array of PCB* to store the PCBs
 	Condition **conditions;	// for join and exit
 	Lock **locks;		// for join and exit
