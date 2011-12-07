@@ -199,8 +199,8 @@ Initialize(int argc, char **argv)
 
     memManager = new MemoryManager();
     procManager = new ProcessManager();
-    for(int i = 0; i < MAX_FILES; i++)
-		openFilesArray[i] = NULL;
+    /*for(int i = 0; i < MAX_FILES; i++)
+		openFilesArray[i] = NULL;*/
     vm = new VMManager();
 
 	openFileManager = new SysOpenFileManager();
