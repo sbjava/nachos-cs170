@@ -14,7 +14,6 @@ public:
     char * fileName;    // file name and the number of user processes accessing
     int fileID;
     int numUsersAccess;	// Number of user processes accessing
-	akajsdkl = 0;
 
 	//@@@ BitMap usedFiles;
 	
@@ -26,5 +25,25 @@ public:
 	SysOpenFile(char* name, OpenFile* f, int id);
 	~SysOpenFile();               
 };
+
+
+class SysOpenFileManager {
+	public:
+		SysOpenFileManager();
+		~SysOpenFileManager();
+
+		int add(SysOpenFile* newSysOpenFile);
+		SysOpenFile* get(char* fileName, int& index);
+		SysOpenFile* get(int index);
+
+		Lock* lock;
+
+		void Close(int index);
+
+	private:
+		SysOpenFile* openFileTable[SOFILETABLE_SIZE];
+		BitMap* openFiles;
+};
+
 #endif /* SYSOPENFILE_H_ */
 
