@@ -48,9 +48,26 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
 	}
     numBytes = fileSize;
     numSectors  = divRoundUp(fileSize, SectorSize);
+	//@@@
+	//numSectores += ((numSectors - 4) + PointerSectors - 1)/PointerSectors;
+
     if (freeMap->NumClear() < numSectors)
 	return FALSE;		// not enough space
-
+	
+	/*
+	int dir = numSectors;
+	
+	if(numSectors > 4){
+		dir = 4;
+	}
+	
+	for(int i = 0; i < dir; i++){
+		dataSectors[i] = freeMap->Find();
+	}
+	
+	for(int j = 0; j < ((numSectors - 4) + PointerSectors - 1)/PointerSectors; j++){
+		
+	}*/
     int i = 0;
     int sectorsToAllocate = numSectors;
 

@@ -18,6 +18,19 @@
 #include "bitmap.h"
 #include "IndirectPointerBlock.h"
 
+
+#ifdef FILESYS
+
+#define FreeMapSector 		0
+#define DirectorySector 	1
+#define NumDirect ((SectorSize - 2 * sizeof(int)) / sizeof(int))
+#define HdrSize 		sizeof(int)*2 + sizeof(int)*NumDirect + sizeof(int)*NumInDirect
+#define MaxFileSize (NumDirect * SectorSize)
+#define NumInDirect ((SectorSize - 2 * sizeof(int) - 4 * sizeof(int)) / (sizeof(IndirectPointerBlock*) + sizeof(int)))
+#define PointersPerIndirect 	((SectorSize - sizeof(int)) / sizeof(int))
+
+#else
+//@@@ possibly need to fix these definitions
 #define FreeMapSector 		0
 #define DirectorySector 	1
 #define NumDirect 	    4
@@ -26,6 +39,7 @@
 #define MaxFileSize 	((NumDirect+(NumInDirect*MaxIndirectPointers )) * SectorSize)
 #define PointersPerIndirect 	((SectorSize - sizeof(int)) / sizeof(int))
 
+#endif
 // The following class defines the Nachos "file header" (in UNIX terms,  
 // the "i-node"), describing where on disk to find all of the data in the file.
 // The file header is organized as a simple table of pointers to
@@ -62,16 +76,27 @@ class FileHeader {
 
     void Print();			// Print the contents of the file.
     
-    bool ExtendFile( int sectors); //extend the file by N sectors
+    //@@@bool ExtendFile( int sectors); //extend the file by N sectors
+	#ifdef FILESYS
+	bool ExtendFile(BitMap *bm, int n, int bytes);
+	#endif
+
     void setNumBytes(int newBytes);
 
   private:
     int numBytes;			// Number of bytes in the file
     int numSectors;			// Number of data sectors in the file
-    int dataSectors[NumDirect];		// Disk sector numbers for each data 
+
+#ifdef FILESYS
+    int dataSectors[4];		// Disk sector numbers for each data 
+    int indirectSector[NumInDirect]; 
+    IndirectPointerBlock* indirectPointers[NumInDirect];
+#else 
+	int dataSectors[NumDirect];		// Disk sector numbers for each data 
 					// block in the file
     int indirectSector[NumInDirect]; //other way to store where to persist this info?
     IndirectPointerBlock* indirectPointers[NumInDirect];
+#endif
     
 };
 
