@@ -1,5 +1,5 @@
 #include "bitmap.h"
-#include "SysOpenFile."
+#include "sysopenfile.h"
 
 class Lock;
 
