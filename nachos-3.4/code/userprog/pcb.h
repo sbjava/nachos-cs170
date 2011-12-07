@@ -12,7 +12,6 @@
 #include "useropenfile.h"
 #include "syscall.h"
 #include "bitmap.h"
-#include "system.h"
 
 #define MAX_FILES 30
 
