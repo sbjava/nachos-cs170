@@ -60,7 +60,7 @@ PCB::Add(UserOpenFile *file){
 		int index = files->Find();
 		
 		if(index > -1){
-			fileArrays[index] = file;
+			fileArray[index] = file;
 		}
 		
 		return index;
