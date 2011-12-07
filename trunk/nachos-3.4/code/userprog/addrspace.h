@@ -16,6 +16,8 @@
 #include "copyright.h"
 #include "filesys.h"
 
+//@@@#include "syscall.h" 
+
 #define UserStackSize		1024 	// increase this as necessary!
 
 #include "pcb.h"
@@ -37,10 +39,18 @@ class AddrSpace {
     
     // translates a virtual address into 
     // a physical address                                       
-    bool Translate(int vAddr, int* physAddr);	
+
+    //ORIG@@@bool Translate(int vAddr, int* physAddr);	
+	bool Translate(int vaddr, int* paddr, bool writing);
+
     int ReadFile(int virtAddr, OpenFile* file, int size, int fileAddr);
+
 	int getNumPages();
+
 	AddrSpace* Duplicate();
+	
+	void CleanupSysCall();
+	
 
     PCB *pcb;				// Process Control Block for info 
 					// about process

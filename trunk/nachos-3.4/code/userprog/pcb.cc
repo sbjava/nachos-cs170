@@ -48,23 +48,32 @@ PCB::getFile(int id){
 
 int
 PCB::Add(UserOpenFile *file){
-	for(int i = 2; i<MAX_FILES; i++){
+	/*for(int i = 2; i<MAX_FILES; i++){
 		if(fileArray[i] == 0){
 			fileArray[i] = file;
 			return i;
 		}
 	}
-	return -1;
+	return -1;*/
+		int index = files->Find();
+		
+		if(index > -1){
+			fileArrays[index] = file;
+		}
+		
+		return index;
 }
 
 bool
-PCB::Remove(int fileId){
+PCB::Remove(UserOpenFile* file){
 	for(int i=0; i < MAX_FILES; i++){
-		if(fileArray[i] != 0 && fileArray[i]->indexPosition == fileId){
-			delete fileArray[i]->fileName;
+		if(files->Test(i) && fileArray[i] == file){
 		    //fileArray[i]->offset = 0;
 		    //fileArray[i]->indexPosition = 0;
-			fileArray[i]=0;
+			//@@@
+			openFileManager->Close(file->indexPosition);
+			delete fileArray[i];			
+			files->Clear(i);
 			return true;
 		}			
 	}

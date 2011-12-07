@@ -2,6 +2,7 @@
 #define MEMORYMANAGER_H
 
 #include "bitmap.h"
+#include "synch.h"
 
 #define NUM_OF_PHYSICAL_PAGES 32
 
@@ -18,6 +19,7 @@ class MemoryManager
   private:
     BitMap *pages;  			// size of NUM_OF_PHYICAL_PAGES
     int numUsedPages;			// numnber of the used pages
+	Lock* memLock;
 };
 
 #endif
