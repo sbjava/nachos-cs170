@@ -10,6 +10,7 @@
 MemoryManager::MemoryManager ()
 {
     pages = new BitMap (NUM_OF_PHYSICAL_PAGES);
+	memLock = new Lock("mem lock");
 }
 
 
@@ -20,6 +21,7 @@ MemoryManager::MemoryManager ()
 MemoryManager::~MemoryManager ()
 {
     delete pages;
+	delete memLock;
 }
 
 //----------------------------------------------------------------------
@@ -29,13 +31,19 @@ MemoryManager::~MemoryManager ()
 int
 MemoryManager::getPage ()
 {
+	///@@@ memlOCk
+	memLock->Acquire();
     // find will return index of page found and Mark() the page
     int freePage = pages->Find();
     // if all pages are in use then return an invalid index
     if(freePage == -1)
-	return -1;
-    numUsedPages++;
+		return -1;
 
+    numUsedPages++;
+	
+	//@@@ memLock added
+	memLock->Release();
+	
     return freePage;
 }
 
@@ -46,13 +54,27 @@ MemoryManager::getPage ()
 void
 MemoryManager::clearPage (int i)
 {
-    pages->Clear (i);
+	//@@@ acquire
+	memLock->Acquire();
+	
+    pages->Clear(i);
     numUsedPages--;
+	
+	//@@@ memLock added
+	memLock->Release();
 }
 
 int
 MemoryManager::getAvailable ()
 {
-    return NUM_OF_PHYSICAL_PAGES - numUsedPages;
+	//@@@ acquire
+	memLock->Acquire();
+	
+	int tmp = pages->NumClear();
+	
+	//@@@ memLock added
+	memLock->Release();
+	
+	return tmp;	
 }
         

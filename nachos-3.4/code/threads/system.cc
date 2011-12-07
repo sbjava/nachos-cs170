@@ -34,7 +34,10 @@ Machine *machine;	// user program memory and registers
 
 MemoryManager *memManager;
 ProcessManager *procManager;
-SysOpenFile *openFilesArray[MAX_FILES];
+
+//@@@ SysOpenFile *openFilesArray[MAX_FILES];
+SysOpenFileManager *openFileManager;
+
 VMManager *vm;
 
 char diskBuffer[PageSize];
@@ -198,6 +201,8 @@ Initialize(int argc, char **argv)
     for(int i = 0; i < MAX_FILES; i++)
 		openFilesArray[i] = NULL;
     vm = new VMManager();
+
+	openFileManager = new SysOpenFileManager();
 
 #endif
 #endif

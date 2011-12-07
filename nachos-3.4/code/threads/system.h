@@ -40,11 +40,15 @@ extern Machine* machine;	// user program memory and registers
 #include "sysopenfile.h"
 #include "../vm/vmManager.h"
 
+//@@@
+#include "sysOpenFileManager.h"
+
 #define MAX_FILES 30
 
     extern MemoryManager *memManager;
     extern ProcessManager *procManager;
-    extern SysOpenFile* openFilesArray[MAX_FILES];
+    //@@@ extern SysOpenFile* openFilesArray[MAX_FILES];
+	extern SysOpenFileManager *openFileManager;
     extern VMManager *vm;	
     extern char diskBuffer[PageSize];
 #define USER_READ 0

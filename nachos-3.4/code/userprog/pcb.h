@@ -11,6 +11,8 @@
 
 #include "useropenfile.h"
 #include "syscall.h"
+#include "bitmap.h"
+#include "system.h"
 
 #define MAX_FILES 30
 
@@ -27,13 +29,23 @@ public:
 	int parentPid;
 	Thread *thread;
 	int status;
+	
+	
 	UserOpenFile *fileArray[MAX_FILES]; 
+	//@@@ UserOpenFile* openFiles[MAX_FILES];
+
 	UserOpenFile* getFile(int id);
+	
 	PCB();
 	PCB(SpaceId currPid, SpaceId currParentPid, Thread* currThread, int currStatus);
 	~PCB();
+	
 	int Add(UserOpenFile *file);
-	bool Remove(int fileId);
+	bool Remove(UserOpenFile *file);
+	UserOpenFile* getFile(int index);
+	
+private:
+	BitMap* files;	
 };
 
 #endif

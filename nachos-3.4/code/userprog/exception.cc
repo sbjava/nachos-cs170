@@ -100,7 +100,7 @@ ExceptionHandler(ExceptionType which)
             case SC_Fork:
             {
                myFork(machine->ReadRegister(4));
-               //machine->WriteRegister(2, result);
+               //machine->WriteRegister(2, );
                break;
             }
 			case SC_Yield:
@@ -195,7 +195,8 @@ ExceptionHandler(ExceptionType which)
 				myClose(arg1);
 				break;
 			}
-		}	
+		}
+		currentThread->space->CleanupSysCall();	
 		incrRegs();		
     }else if(which == PageFaultException)
     {
@@ -213,8 +214,8 @@ ExceptionHandler(ExceptionType which)
 ////////////////////////////////
 extern void PageFaultHandler(int vaddr) 
 {
-    int vpn = vaddr / PageSize;
-    DEBUG('q',"======================Page fault at page %d=======================\n",vpn);
+    int page = vaddr / PageSize;
+    DEBUG('q',"Page fault at page %d\n",page);
     #ifdef VM
     vm->Swap(vpn, currentThread->space->pcb->pid);
     #endif
@@ -226,9 +227,16 @@ extern void PageFaultHandler(int vaddr)
 // Dummy function used by myFork
 /////////////////////////////////
 void myForkHelper(int funcAddr) {
-	currentThread->space->RestoreState(); // load page table register
+	//@@@ ADDED
+	currentThread->space->InitRegisters();
+	
+	currentThread->space->RestoreState(); // load page table register	
 	machine->WriteRegister(PCReg, funcAddr);
 	machine->WriteRegister(NextPCReg, funcAddr + 4);
+	
+	//@@@ return address added
+	//machine->WriteRegister(RetAddrReg, funcAddr+8);
+	
 	machine->Run(); // jump to the user progam
 	ASSERT(FALSE); // machine->Run never returns;	
 }
@@ -255,7 +263,11 @@ void myFork(int funcAddr){
 	space->pcb = pcb;
 	thread->space = space;
 	procManager->insertProcess(pcb, pcb->pid);
+	
+	//@@@ save state needed?
 	space->SaveState();
+	
+	
 	printf("Process %d Fork %d: start at address 0x%X with %d pages memory\n",currPid,pcb->pid,funcAddr,space->getNumPages());
 	thread->Fork(myForkHelper, funcAddr);
 	currentThread->Yield();	

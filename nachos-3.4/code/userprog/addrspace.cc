@@ -109,19 +109,19 @@ AddrSpace::AddrSpace(OpenFile *executable)
     pageTable = new TranslationEntry[numPages];
     for (i = 0; i < numPages; i++) 
     {
-	pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
+		pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
 	
         #ifdef VM // initialize process with no pages in memory
         pageTable[i].physicalPage = -1;
         pageTable[i].valid = FALSE;
         #else
         pageTable[i].physicalPage = memManager->getPage();  // memManager defined in system.cc
-	pageTable[i].valid = TRUE;
+		pageTable[i].valid = TRUE;
         #endif
 
-	pageTable[i].use = FALSE;
-	pageTable[i].dirty = FALSE;
-	pageTable[i].readOnly = FALSE;  // if the code segment was entirely on 
+		pageTable[i].use = FALSE;
+		pageTable[i].dirty = FALSE;
+		pageTable[i].readOnly = FALSE;  // if the code segment was entirely on 
 					// a separate page, we could set its 
 					// pages to be read-only
     }
@@ -149,7 +149,7 @@ AddrSpace::AddrSpace(OpenFile *executable)
     
     
     int page = ceil((float)(noffH.code.size + noffH.initData.size)/PageSize);
-    DEBUG('q', "######################Adding %d pages\n",(numPages - page));
+    DEBUG('q', "Adding %d pages\n",(numPages - page));
     
     for (int v = page; v < numPages; v++)
         vm->AddPage(&pageTable[v], pcb->pid, PageSize);
@@ -210,7 +210,7 @@ AddrSpace::~AddrSpace() {
 #else
 AddrSpace::~AddrSpace() 
 {
-    for (int i = 0; i < numPages; i++) 
+    for (int i = 0; i < numPages; i++)
        memManager->clearPage(pageTable[i].physicalPage);
 
     delete pageTable;
@@ -260,6 +260,8 @@ AddrSpace::InitRegisters()
 
 void AddrSpace::SaveState() 
 {
+	
+	//@@@ MIGHT NEED TO TAKE OUT
 	for(int i = 0; i<NumTotalRegs; i++){
 		progRegisters[i] = machine->ReadRegister(i);
 	}
@@ -277,6 +279,8 @@ void AddrSpace::RestoreState()
 {
     machine->pageTable = pageTable;
     machine->pageTableSize = numPages;
+	
+	//@@@ MIGHT NEED TO TAKE OUT
 	for(int i = 0; i < NumTotalRegs; i++){
 		machine->WriteRegister(i, progRegisters[i]);
 	}
@@ -293,7 +297,7 @@ void AddrSpace::RestoreState()
 //      "physAddr" : the physical address to be stored
 //---------------------------------------------------------------------
 bool
-AddrSpace::Translate(int vAddr, int *physAddr)
+AddrSpace::Translate(int vAddr, int *physAddr, bool writing)
 {
     if(vAddr < 0)
     {
@@ -306,7 +310,7 @@ AddrSpace::Translate(int vAddr, int *physAddr)
     else if(!pageTable[vpn].valid)
     {
 	#ifdef VM
-	DEBUG('3', "**PageFaultHandler, vAddr: %i\n", vAddr);	
+	DEBUG('3', "PageFaultHandler, vAddr: %i\n", vAddr);	
  	PageFaultHandler(vAddr);
 	#else
         return false;
@@ -316,10 +320,10 @@ AddrSpace::Translate(int vAddr, int *physAddr)
     int offset = vAddr % PageSize;
 
     *physAddr = pageTable[vpn].physicalPage * PageSize + offset;  // should it be ".physicalPage" ???
-    /*
+    
     if(writing)
        	pageTable[vpn].dirty = TRUE;	
-    */ 
+     
     // ^^^ add this?? ^^^
 
    #ifdef VM
@@ -346,7 +350,7 @@ int AddrSpace::ReadFile(int vaddr, OpenFile* file, int size, int fileAddr) {
    
    char* out_buffer;
    
-   DEBUG('q', "--------------------Start vaddr: %d end vaddr: %d\n", vaddr, vaddr + size);
+   DEBUG('q', "Start vaddr: %d end vaddr: %d\n", vaddr, vaddr + size);
                
    while (bytes_read < size) {
        int read = file->ReadAt(diskBuffer, PageSize - (vaddr % PageSize), fileAddr);
@@ -381,7 +385,7 @@ int AddrSpace::ReadFile(int vaddr, OpenFile* file, int size, int fileAddr) {
 //      "size" : amount of bytes to be read
 //      "fileAddr" : the file address
 //---------------------------------------------------------------------
-int
+
 AddrSpace::ReadFile(int virtAddr, OpenFile* file, int size, int fileAddr)
 {
     char diskBuffer[size]; 	// stores the bytes read
@@ -428,6 +432,26 @@ AddrSpace::ReadFile(int virtAddr, OpenFile* file, int size, int fileAddr)
 #endif
 
 
+#ifdef VM
+//@@@ don't know if this for sure does the same thing???
+AddrSpace* AddrSpace::Duplicate(AddrSpace** copySpace) 
+{
+	AddrSpace* dup = new AddrSpace();
+	dup->numPages = this->numPages;
+	dup->pageTable = new TranslationEntry[numPages];
+	for (int i = 0; i < numPages; i++) {
+		//@@@ORIG dup->pageTable[i].virtualPage = i;
+	    dup->pageTable[i].virtualPage = this->pageTable[i].virtualPage;
+	    dup->pageTable[i].physicalPage = memManager->getPage();
+	    dup->pageTable[i].valid = this->pageTable[i].valid;
+	    dup->pageTable[i].use = this->pageTable[i].use;
+	    dup->pageTable[i].dirty = this->pageTable[i].dirty;
+	    dup->pageTable[i].readOnly = this->pageTable[i].readOnly;
+	}
+	
+	return dup;	
+}
+#else
 //Function to make a copy of an address space
 AddrSpace*
 AddrSpace::Duplicate(){
@@ -438,7 +462,8 @@ AddrSpace::Duplicate(){
 	dup->numPages = this->numPages;
 	dup->pageTable = new TranslationEntry[numPages];
 	for (int i = 0; i < numPages; i++) {
-	    dup->pageTable[i].virtualPage = i;
+		//@@@ORIG dup->pageTable[i].virtualPage = i;
+	    dup->pageTable[i].virtualPage = this->pageTable[i].virtualPage;
 	    dup->pageTable[i].physicalPage = memManager->getPage();
 	    dup->pageTable[i].valid = this->pageTable[i].valid;
 	    dup->pageTable[i].use = this->pageTable[i].use;
@@ -451,10 +476,16 @@ AddrSpace::Duplicate(){
 	
 	return dup;	
 }
-
+#endif
 int
 AddrSpace::getNumPages(){
 	return numPages;
+}
+
+void
+AddrSpace::CleanupSysCall(){
+	for(int i = 0; i < numPages; i++)
+		pageTable[i].use = FALSE;
 }
 
 

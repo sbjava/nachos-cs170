@@ -10,7 +10,7 @@
 // SysOpenFile::closeOne
 //      close a SysOpenFile and accessing processes
 //----------------------------------------------------------------------
-
+/*
 void SysOpenFile::closeOne() 
 {
     if(numUsersAccess <= 0)
@@ -34,16 +34,33 @@ void SysOpenFile::close()
     delete fileName;
     delete file;
 }
+*/
 
-SysOpenFile::SysOpenFile():usedFiles(SOFILETABLE_SIZE)
+SysOpenFile::SysOpenFile()
 {
 	file = 0; 	
     fileName = 0;   
-    numUsersAccess = 0;	
+    numUsersAccess = 0;
+	fileId = 0;
+	//@@@
+	lock = new Lock("lock")
 	//usedFiles = 0;	
 }
 
+SysOpenFile::SysOpenFile(char * name, OpenFile* f, int id)
+{
+	file = f; 	
+    fileName = name;   
+    numUsersAccess = 1;
+	fileId = id;
+	//@@@
+	lock = new Lock("lock")
+	//usedFiles = 0;	
+}
+
+
+
 SysOpenFile::~SysOpenFile()
 {
-	
+	delete lock;
 }
