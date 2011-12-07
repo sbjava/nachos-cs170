@@ -49,7 +49,7 @@ extern Machine* machine;	// user program memory and registers
     //@@@ extern SysOpenFile* openFilesArray[MAX_FILES];
 	extern SysOpenFileManager *openFileManager;
     extern VMManager *vm;	
-    extern char diskBuffer[PageSize];
+    extern char *diskBuffer;
 #define USER_READ 0
 #define USER_WRITE 1
 int ReadWrite(int virAddr, char* buffer, int size, int type);
