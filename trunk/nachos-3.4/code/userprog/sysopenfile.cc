@@ -41,9 +41,9 @@ SysOpenFile::SysOpenFile()
 	file = 0; 	
     fileName = 0;   
     numUsersAccess = 0;
-	fileId = 0;
+	fileID = 0;
 	//@@@
-	lock = new Lock("lock")
+	lock = new Lock("lock");
 	//usedFiles = 0;	
 }
 
@@ -52,9 +52,9 @@ SysOpenFile::SysOpenFile(char * name, OpenFile* f, int id)
 	file = f; 	
     fileName = name;   
     numUsersAccess = 1;
-	fileId = id;
+	fileID = id;
 	//@@@
-	lock = new Lock("lock")
+	lock = new Lock("lock");
 	//usedFiles = 0;	
 }
 
@@ -98,7 +98,7 @@ SysOpenFile* SysOpenFileManager::Get(char* fileName, int& index) {
 	for (int i=0; i < SOFILETABLE_SIZE; i++) {
 		if (!openFiles->Test(i)) 
 			break;
-		if (strcmp(sysOpenFileTable[i]->fileName, fileName) == 0) 
+		if (strcmp(openFileTable[i]->fileName, fileName) == 0) 
 		{
 			index = i;
 			lock->Release();
@@ -138,8 +138,8 @@ void SysOpenFileManager::Close(int index) {
 	}
 
 	if (openFiles->Test(index)) {
-		openFileTable[index]->userOpens--;
-		if (openFileTable[index]->userOpens == 0) 
+		openFileTable[index]->numUsersAccess--;
+		if (openFileTable[index]->numUsersAccess == 0) 
 		{
 			delete openFileTable[index]->file;
 			delete openFileTable[index];
