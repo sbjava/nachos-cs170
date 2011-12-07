@@ -7,7 +7,7 @@
 
 //@@@ 
 #ifdef VM 
-#include "swapManager.h"
+#include "../vm/swapManager.h"
 #define MAX_PROCESSES SWAP_SIZE*PageSize/UserStackSize
 
 #else
