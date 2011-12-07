@@ -41,7 +41,7 @@ SysOpenFileManager *openFileManager;
 
 VMManager *vm;
 
-char diskBuffer[PageSize];
+char* diskBuffer;
 
 
 int ReadWrite(int virAddr, char* buffer, int size, int type) {
@@ -204,6 +204,7 @@ Initialize(int argc, char **argv)
     vm = new VMManager();
 
 	openFileManager = new SysOpenFileManager();
+	diskBuffer = new char[PageSize];
 
 #endif
 #endif
