@@ -1,7 +1,7 @@
 #include "bitmap.h"
 #include "sysopenfile.h"
-
-class Lock;
+#include "synch.h"
+//class Lock;
 
 class SysOpenFileManager {
 	public:
