@@ -41,7 +41,7 @@ extern Machine* machine;	// user program memory and registers
 #include "../vm/vmManager.h"
 
 //@@@
-#include "sysOpenFileManager.h"
+#include "../userprog/sysOpenFileManager.h"
 
 #define MAX_FILES 30
 
