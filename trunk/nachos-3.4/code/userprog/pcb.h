@@ -34,7 +34,7 @@ public:
 	UserOpenFile *fileArray[MAX_FILES]; 
 	//@@@ UserOpenFile* openFiles[MAX_FILES];
 
-	UserOpenFile* getFile(int id);
+	//UserOpenFile* getFile(int id);
 	
 	PCB();
 	PCB(SpaceId currPid, SpaceId currParentPid, Thread* currThread, int currStatus);
