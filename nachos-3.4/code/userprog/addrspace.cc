@@ -262,9 +262,9 @@ void AddrSpace::SaveState()
 {
 	
 	//@@@ MIGHT NEED TO TAKE OUT
-	for(int i = 0; i<NumTotalRegs; i++){
+	/*for(int i = 0; i<NumTotalRegs; i++){
 		progRegisters[i] = machine->ReadRegister(i);
-	}
+	}*/
 }
 
 //----------------------------------------------------------------------
@@ -281,9 +281,9 @@ void AddrSpace::RestoreState()
     machine->pageTableSize = numPages;
 	
 	//@@@ MIGHT NEED TO TAKE OUT
-	for(int i = 0; i < NumTotalRegs; i++){
+	/*for(int i = 0; i < NumTotalRegs; i++){
 		machine->WriteRegister(i, progRegisters[i]);
-	}
+	}*/
 }
 
 //---------------------------------------------------------------------
