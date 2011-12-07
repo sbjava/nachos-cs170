@@ -20,7 +20,7 @@ class SysOpenFileManager {
 		void Close(int index);
 
 	private:
-		SysOpenFile* openFileTable[SOFIKKLETABLE_SIZE];
+		SysOpenFile* openFileTable[SOFILETABLE_SIZE];
 		BitMap* openFiles;
 };
 
