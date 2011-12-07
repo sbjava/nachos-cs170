@@ -528,9 +528,10 @@ void myWrite(int bufferAddress, int size, OpenFileId id){
 		UserOpenFile* uFile =  currentThread->space->pcb->getFile(id);
 		if(uFile == NULL)
 			return;
-			
+		
+		SysOpenFile *sFile;	
 		if(openFileManager->Get(uFile->indexPosition)->fileID == id)	
-			SysOpenFile *sFile = openFileManager->Get(uFile->indexPosition);
+			sFile = openFileManager->Get(uFile->indexPosition);
 		else
 			return;
 		
