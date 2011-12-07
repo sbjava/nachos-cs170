@@ -3,8 +3,8 @@
 
 #include "bitmap.h"
 #include "sysopenfile.h"
-//#include "synch.h"
-class Lock;
+#include "synch.h"
+//class Lock;
 
 class SysOpenFileManager {
 	public:
@@ -20,7 +20,7 @@ class SysOpenFileManager {
 		void Close(int index);
 
 	private:
-		SysOpenFile* openFileTable[SOFILETABLE_SIZE];
+		SysOpenFile* openFileTable[SOFIKKLETABLE_SIZE];
 		BitMap* openFiles;
 };
 
