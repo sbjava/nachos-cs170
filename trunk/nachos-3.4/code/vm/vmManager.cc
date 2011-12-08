@@ -155,15 +155,15 @@ void VMManager::Swap(int vpn, SpaceId pid) {
                 DEBUG('q', "Swapping into main memory page %d\n", phys_page);
                 char* paddr = machine->mainMemory + phys_page*PageSize;
                 page = swapMgr->findPage(pid, vpn, paddr);
-				DEBUG('q', "**In vm->swap: phys_page %i \n", phys_page);			
+				//DEBUG('q', "In vm->swap: phys_page %i \n", phys_page);			
 				page->physicalPage = phys_page;
-				DEBUG('q', "**In vm->swap: vpn%i   pid%i\n", vpn, pid);
+				//DEBUG('q', "In vm->swap: vpn%i   pid%i\n", vpn, pid);
 				 
 
                 //lru->AddPage(page,pid);
 				policy->AddPage(page, pid);
-				
-                DEBUG('3', "L %d: %d -> %d\n", pid, vpn, phys_page);
+				printf("L %d: %d -> %d\n", pid, vpn, phys_page);
+                ///DEBUG('3', "L %d: %d -> %d\n", pid, vpn, phys_page);
         }
         else {
                 // Assumption is, if its in main memory,
@@ -179,11 +179,13 @@ void VMManager::Swap(int vpn, SpaceId pid) {
                 victim->valid = false;
                 char* paddr = machine->mainMemory + victim->physicalPage*PageSize;
                 if (victim->dirty) {
-                        DEBUG('3', "S %d: %d\n", pid, victim->physicalPage);
+                        //DEBUG('3', "S %d: %d\n", pid, victim->physicalPage);
+					printf("S %d: %d\n", pid, victim->physicalPage);
                         swapMgr->writePage(pid, victim->virtualPage, paddr);
                 }
                 else {
-                        DEBUG('3', "E %d: %d\n", pid, victim->physicalPage);
+                    //DEBUG('3', "E %d: %d\n", pid, victim->physicalPage);
+					printf("E %d: %d\n", pid, victim->physicalPage);
                 }
                 page = swapMgr->findPage(pid, vpn, paddr);
                 page->physicalPage = victim->physicalPage;
