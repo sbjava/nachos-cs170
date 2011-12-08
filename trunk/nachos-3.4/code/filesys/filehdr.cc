@@ -145,15 +145,8 @@ FileHeader::Deallocate(BitMap *freeMap)
 {
 
 
-    for (int i = 0; i < numSectors; i++) {
-        DEBUG('f',"Delloc %d (%d)\n",numSectors, NumDirect);
-        //if (numSectors < NumDirect){
-            ASSERT(freeMap->Test((int) dataSectors[i]));  // ought to be marked!
-            freeMap->Clear((int) dataSectors[i]);
-       //}
-    }
-    #ifdef FILESYS    
     
+    #ifdef FILESYS        
     int indirects = ((numSectors - 4) + PointerSectors - 1)/PointerSectors;
     int directs = (numSectors>4)? 4 : numSectors;
 
@@ -170,7 +163,16 @@ FileHeader::Deallocate(BitMap *freeMap)
         indirectDataSectors[j]->Deallocate(freeMap);
 	delete indirectDataSectors[j];
     }
+	#else
+	for (int i = 0; i < numSectors; i++) {
+        DEBUG('f',"Delloc %d (%d)\n",numSectors, NumDirect);
+        //if (numSectors < NumDirect){
+            ASSERT(freeMap->Test((int) dataSectors[i]));  // ought to be marked!
+            freeMap->Clear((int) dataSectors[i]);
+       //}
+    }
 	#endif
+	
 }
 
 //----------------------------------------------------------------------
