@@ -70,6 +70,6 @@ void IndirectPointerBlock::Deallocate(BitMap *bitMap) {
     bitMap->Clear((int) dataSectors[i]);
     
   }
-  numSectors=0; //@@@ where did this come from??
+  numSectors=0; 
   
 }
