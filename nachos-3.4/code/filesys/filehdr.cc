@@ -62,7 +62,7 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
 	}
 	
 	for(int i = 0; i < dir; i++){
-		dataSectors[i] = freeMap->Find();
+		directDataSectors[i] = freeMap->Find();
 	}
 	
 	for(int j = 0; j < ((numSectors - 4) + PointerSectors - 1)/PointerSectors; j++){
@@ -74,7 +74,7 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
 			sect = (numSectors - 4) - PointerSectors*j;
 		}
 
-		for (int k = 0; k < sectors; k++) {
+		for (int k = 0; k < sect; k++) {
 			indirectDataSectors[j]->PutSector(freeMap->Find());
 		}
 	}

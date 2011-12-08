@@ -30,6 +30,8 @@
 
 #define NumInDirect 	((SectorSize - 2 * sizeof(int) - 4 * sizeof(int)) / (sizeof(IndirectPointerBlock*) + sizeof(int)))
 
+#define PointerSectors ((SectorSize - sizeof(int)) / sizeof(int))
+
 // The following class defines the Nachos "file header" (in UNIX terms,  
 // the "i-node"), describing where on disk to find all of the data in the file.
 // The file header is organized as a simple table of pointers to
@@ -77,17 +79,16 @@ class FileHeader {
     int numBytes;			// Number of bytes in the file
     int numSectors;			// Number of data sectors in the file
 
-#ifdef FILESYS
-    int directDataSectors[4];		// Disk sector numbers for each data 
+	#ifdef FILESYS
+    	int directDataSectors[4];		// Disk sector numbers for each data 
 					// block in the file
-
-    int pointerBlockSectors[NumInDirect];
-    IndirectPointerBlock* indirectDataSectors[NumInDirect];
+    	int pointerBlockSectors[NumInDirect];
+    	IndirectPointerBlock* indirectDataSectors[NumInDirect];
 	
-#else
-    int dataSectors[NumDirect];		// Disk sector numbers for each data 
+	#else
+    	int dataSectors[NumDirect];		// Disk sector numbers for each data 
 						// block in the file
-#endif
+	#endif
 // -------------
     
 };
