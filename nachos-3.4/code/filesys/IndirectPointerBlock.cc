@@ -67,7 +67,7 @@ void IndirectPointerBlock::PutSector( int sector ){
     
 void IndirectPointerBlock::Deallocate(BitMap *bitMap) {
   for( int i=0; i < numSectors ; i ++){
-    bitMap->Clear(dataSectors[numSectors]);
+    bitMap->Clear((int) dataSectors[i]);
     
   }
   numSectors=0; //@@@ where did this come from??
