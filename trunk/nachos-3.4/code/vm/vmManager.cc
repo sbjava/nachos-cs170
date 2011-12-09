@@ -175,7 +175,7 @@ void VMManager::Swap(int vpn, SpaceId pid) {
 				//TranslationEntry* victim = lru->GetLRU();
 				TranslationEntry* victim = policy->GetLRU();
 				
-                DEBUG('q', "================= Finding a victim to swap out of main memory page %d\n", victim->physicalPage);
+                DEBUG('q', "Finding a victim to swap out of main memory page %d\n", victim->physicalPage);
                 victim->valid = false;
                 char* paddr = machine->mainMemory + victim->physicalPage*PageSize;
                 if (victim->dirty) {

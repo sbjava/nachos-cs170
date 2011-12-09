@@ -151,89 +151,8 @@ OpenFile::WriteAt(char *from, int numBytes, int position)
     bool firstAligned, lastAligned;
     char *buf;
 
-	#ifdef FILESYS
-	
-	    numSectors = fileLength/SectorSize;
-	
-    	int total_length = fileLength - position + numBytes;
-    	int num_sectors = divRoundUp(total_length, SectorSize);
-    	int first_file_sector = hdr->ByteToSector(0); // Assume files start at beginning of sector
-	
-    	if (first_file_sector + num_sectors > SectorSize*NumSectors) {
-			return 0;
-    	}
-	
-	#else
-    	if ((numBytes <= 0) || (position >= fileLength))
-			return 0;				// check request
-	#endif
-	
-	
-	#ifdef FILESYS
-		if ((position + numBytes) <= fileLength)
-		{
-		}
-			
-		else if (position < fileLength) 
-		{
-		#define FreeMapSector 0
-			int last_byte = position;
-			int offset = last_byte - divRoundDown(last_byte, SectorSize)*SectorSize;
-			int newSectors  = divRoundUp(numBytes - (SectorSize - offset), SectorSize);
-			
-			OpenFile* freeMapFile = new OpenFile(FreeMapSector);
-			BitMap* freeMap = new BitMap(NumSectors);
-			
-			freeMap->FetchFrom(freeMapFile);
-			
-			if (!hdr->ExtendFile(freeMap, newSectors, (position + numBytes))) {
-				printf("Not enough free disk space to write to file. Ignoring write.\n");
-				return 0;
-			}
-			
-			freeMap->WriteBack(freeMapFile);
-			
-			delete freeMapFile;
-			delete freeMap;	
-		}
-			
-		else 
-		{
-			position = fileLength;			
-			int last_byte;
-						
-			if (fileLength == 0) {
-				last_byte = 0;
-			}
-			else {
-				last_byte = fileLength - 1;
-			}
-			
-			int offset = last_byte - divRoundDown(last_byte, SectorSize)*SectorSize;
-			
-			int newSectors  = divRoundUp(numBytes - (SectorSize - offset), SectorSize);
-			
-			if ((numSectors == 0)&&(newSectors == 0)) {
-				newSectors++;
-			}			
-			
-			OpenFile* freeMapFile = new OpenFile(FreeMapSector);
-			BitMap* freeMap = new BitMap(NumSectors);
-			
-			freeMap->FetchFrom(freeMapFile);
-			
-			if (!hdr->ExtendFile(freeMap, newSectors, (position + numBytes))) {
-				printf("Not enough free disk space to write to file. Ignoring write.\n");
-				return 0;
-			}
-			
-			freeMap->WriteBack(freeMapFile);			
-			delete freeMapFile;
-			delete freeMap;			
-			fileLength = hdr->FileLength();			
-		}
-	#endif
-
+    if ((numBytes <= 0) || (position >= fileLength))
+	return 0;				// check request
     if ((position + numBytes) > fileLength)
 	numBytes = fileLength - position;
     DEBUG('f', "Writing %d bytes at %d, from file of length %d.\n", 	
@@ -248,17 +167,17 @@ OpenFile::WriteAt(char *from, int numBytes, int position)
     firstAligned = (position == (firstSector * SectorSize));
     lastAligned = ((position + numBytes) == ((lastSector + 1) * SectorSize));
 
-	// read in first and last sector, if they are to be partially modified
+// read in first and last sector, if they are to be partially modified
     if (!firstAligned)
         ReadAt(buf, SectorSize, firstSector * SectorSize);	
     if (!lastAligned && ((firstSector != lastSector) || firstAligned))
         ReadAt(&buf[(lastSector - firstSector) * SectorSize], 
 				SectorSize, lastSector * SectorSize);	
 
-	// copy in the bytes we want to change 
+// copy in the bytes we want to change 
     bcopy(from, &buf[position - (firstSector * SectorSize)], numBytes);
 
-	// write modified sectors back
+// write modified sectors back
     for (i = firstSector; i <= lastSector; i++)	
         synchDisk->WriteSector(hdr->ByteToSector(i * SectorSize), 
 					&buf[(i - firstSector) * SectorSize]);
