@@ -56,7 +56,8 @@ int VMManager::swap( TranslationEntry* newPage ){
     activePageMap[ pPage ] = sPage;
     activePages[ pPage ] = newPage;
     
-	//DEBUG('3',"L [%d]: [%d] -> [%d]\n", pid, oldPage, pPage);
+	printf("L [%d]: [%d] -> [%d]\n", currentThread->space->pcb->pid, oldPage, pPage);
+
     return pPage;
 }
 
@@ -114,12 +115,12 @@ void Mark(TranslationEntry* page);
 int free() {swapMgr->free();}
 */
 bool VMManager::AddPage(TranslationEntry* page, SpaceId pid, char* buffer, int size) {
-        //DEBUG('3', "Z %d: %d\n", pid, page->virtualPage);
+        printf("Z %d: %d\n", pid, page->virtualPage);
         return swapMgr->addPage(page, pid, buffer, size);
 }
 
 bool VMManager::AddPage(TranslationEntry* page, SpaceId pid, int size) {
-        //DEBUG('3', "Z %d: %d\n", pid, page->virtualPage);
+        printf("Z %d: %d\n", pid, page->virtualPage);
         return swapMgr->addPage(page, pid,size);
 }
 
