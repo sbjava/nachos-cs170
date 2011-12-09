@@ -1,0 +1,17 @@
+Jill Schwalb
+John Meeker
+
+We have implemented the first parts of the project. We 
+believe that the vm part *should* work... We have honestly 
+done very minimal testing as simply completing the project 
+has been so time consuming. We know that everything compiles.
+
+We used LRU repalcement instead of a FIFO with second chance 
+because it was easier to implement. Even though a FIFO queue
+generally has better performance.
+
+to compile:
+gmake
+
+to test:
+same commands as before
